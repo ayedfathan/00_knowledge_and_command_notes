@@ -1,0 +1,25 @@
+The ps stands for process status and it is a handy tool used to retrieve 
+the information about currently running processes on Linux or BSD systems. 
+This cheatsheet collets the most useful ps invocations
+
+Show all processes
+--> ps aux
+
+Show all processes with threads in tree mode
+--> ps -AlFH
+
+Show all processes including commandline arguments
+--> ps -AFl
+
+Show list of processes owned by a specific user
+--> ps -U user -u user u
+
+Show information for a particular process
+--> ps -p pid
+--> ps uax | grep process_name
+
+Get top 5 processes by CPU usage
+--> ps auxf | sort -nr -k 3 | head -5
+
+Get top 5 processes by memory usage
+--> ps auxf | sort -nr -k 4 | head -5
