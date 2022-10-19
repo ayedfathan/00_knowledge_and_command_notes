@@ -1,0 +1,26 @@
+Show all your network interface
+--> netstat -ie
+This similar if you run --> ip a
+
+displaying my routing table
+--> netstat -r
+
+display all current connection 
+--> netstat -a
+
+list all the current active tcp connection
+--> netstat -at
+
+print listening connection in tcp
+--> netstat -lt
+
+netstat tutorial with samples
+https://www.tutorialspoint.com/unix_commands/netstat.htm
+
+Grep the port 22 for ssh
+--> netstat -an | grep :22
+You can use ss command also for this
+--> sudo ss -tulpn
+also you can use the lsof command
+--> lsof -i | grep 22
+
