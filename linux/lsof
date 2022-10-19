@@ -1,0 +1,84 @@
+lsof or ‘LiSt Open Files’ is used to find out which files are open by which process. 
+Since Linux/Unix considers everything as a files (pipes, sockets,directories, devices etc) 
+we can use this command to identify which files are currently in use.
+
+
+In the below example, it will show long listing of open files some of them are extracted 
+for better understanding which displays the columns like Command, PID, USER, FD, TYPE etc.
+90% most of the time you will care the data on column COMMAND, PID, USER, and NAME
+--> lsof
+
+COMMAND    PID      USER   FD      TYPE     DEVICE  SIZE/OFF       NODE NAME
+init         1      root  cwd      DIR      253,0      4096          2 /
+init         1      root  rtd      DIR      253,0      4096          2 /
+init         1      root  txt      REG      253,0    145180     147164 /sbin/init
+init         1      root  mem      REG      253,0   1889704     190149 /lib/libc-2.12.so
+init         1      root   0u      CHR        1,3       0t0       3764 /dev/null
+init         1      root   1u      CHR        1,3       0t0       3764 /dev/null
+init         1      root   2u      CHR        1,3       0t0       3764 /dev/null
+init         1      root   3r     FIFO        0,8       0t0       8449 pipe
+init         1      root   4w     FIFO       0,8       0t0       8449 pipe
+init         1      root   5r      DIR       0,10         0          1 inotify
+init         1      root   6r      DIR       0,10         0          1 inotify
+init         1      root   7u     unix 0xc1513880       0t0       8450 socket
+
+Sections and it’s values are self-explanatory. However, we’ll review FD & TYPE columns more precisely.
+FD – stands for File descriptor and may seen some of the values as:
+	cwd current working directory
+	rtd root directory
+	txt program text (code and data)
+	mem memory-mapped file
+Also in FD column numbers like 1u is actual file descriptor and followed by u,r,w of it’s mode as:
+	r for read access.
+	w for write access.
+	u for read and write access.
+TYPE – of files and it’s identification.
+	DIR – Directory
+	REG – Regular file
+	CHR – Character special file.
+	FIFO – First In First Out
+
+The below command will display the list of all opened files of user cyberpunk.
+--> lsof -u cyberpunk
+
+To find out all the running process of specific port, just use the following command with option -i. The below example will list all running process of port 22
+--> lsof -i TCP:22
+
+To list all the running process of open files of TCP Port ranges from 1-1024.
+--> lsof -i TCP:1-1024
+
+Below example shows user cyberpunk is using command like ping and /etc directory .
+--> lsof -i -u cyberpunk
+
+The following command with option ‘-i’ shows the list of all network connections ‘LISTENING & ESTABLISHED’.
+--> lsof -i
+
+The below example only shows whose PID is 1 [One].
+--> lsof -p 1
+in real life, if you want to use this. you will grep the process id first from ps command.
+for example, i want to know all the files accessed by nginx process. so i will do
+--> ps auwx|grep nginx
+from here i will get the pid for nginx and then feed that id to
+--> lsof -p <pid>
+
+You want to know which processes access file /var/log/nginx/access.log
+--> lsof /var/log/nginx/access.log
+
+You want to know the binary run for certain process. you can do below
+--> ps uuwx|grep nginx --> you get the pid and then
+--> lsof -p <pid> | grep bin
+
+What are the shared library open by nginx
+--> lsof -p <pid> | grep .so
+
+let say you want to know where certain process put their log.
+this good if you forget the name of the log, or you really don't know where the log is
+--> lsof -p <pid> | grep log
+
+let say, you have certain library that already patch. and you want to make sure
+that the old library path are not being used anymore.
+--> lsof /path/to/the/library
+and then for each of the command you find, you need to restart the services to used the new lib
+
+
+
