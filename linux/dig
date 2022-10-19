@@ -1,0 +1,39 @@
+dig command stands for Domain Information Groper. It is used for retrieving information about DNS name servers. 
+It is basically used by network administrators. It is used for verifying and troubleshooting DNS problems and to perform DNS lookups. 
+Dig command replaces older tools such as nslookup and the host.
+
+Installing dig command in debian or ubuntu
+--> sudo apt-get install dnsutils
+
+To query domain “A” record for geeksforgeeks.org
+--> dig geeksforgeeks.org
+
+To query domain “A” record with +short, just to show the IP, no other information
+--> dig geeksforgeeks.org +short
+
+To query all DNS record types.
+--> dig geeksforgeeks.org ANY
+
+everse DNS lookup can be used to fetch domain name or the host name from the IP address.
+“-x” option is used to perform reverse DNS lookup
+--> dig -x 8.8.8.8
+
+Understanding section in dig output. You can check below link
+--> https://linuxize.com/post/how-to-use-dig-command-to-query-dns-in-linux/
+
+By default, if no name server is specified, dig uses the servers listed in /etc/resolv.conf file.
+To specify a name server against which the query will be executed, use the @ (at) symbol 
+followed by the name server IP address or hostname
+For example, to query the Google name server (8.8.8.8) for information about the linux.org domain you would use
+--> dig linux.org @8.8.8.8
+
+If you want to query a large number of domains, you can add them in a file (one domain per line) 
+and use the -f option followed by the file name.
+In the following example, we are querying the domains listed in the domains.txt file
+--> domains.txt
+	lxer.com
+	linuxtoday.com
+	tuxmachines.org
+--> dig -f domains.txt +short
+
+
