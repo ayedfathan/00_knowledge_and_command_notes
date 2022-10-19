@@ -1,2 +1,9 @@
 tmux cheat sheet in below website
 https://tmuxcheatsheet.com/
+
+Understand the hierarchy of tmux
+Session
+	windows
+		pane
+
+1 session can have multiple windows, and 1 window can have multiple panes
