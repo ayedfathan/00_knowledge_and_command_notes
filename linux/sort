@@ -1,0 +1,14 @@
+To check what sort do, can be read from this website
+https://shapeshed.com/unix-sort/
+
+to sort based on column 3 with space delimite
+--> sort -k 3 <file_name>
+
+to sort based on column 3 with , as delimiter
+--> sort -t , -k 3 <file_name>
+
+to make the result of sort uniq add -u
+to reverse, descending order -r
+for numeric -n
+
+

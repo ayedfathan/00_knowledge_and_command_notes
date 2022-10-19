@@ -1,0 +1,7 @@
+chek cut usage in below website
+https://bencane.com/2012/10/22/cheat-sheet-cutting-text-with-cut/
+
+if you have file with delimiter besides space, better used cut.
+but if the delimiter is space, easier to use awk
+
+

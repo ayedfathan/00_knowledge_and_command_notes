@@ -1,0 +1,19 @@
+For learning grep you can use this website
+https://www.geeksforgeeks.org/grep-command-in-unixlinux/
+
+Grep doest have and, it only have or and not.
+But we can simulate and if we wanted. lets check how to do or first.
+Let say i want to retrieve user joe and root from the /etc/passwd file
+--> grep -e 'joe\|root' /etc/passwd
+--> grep -E 'joe|root' /etc/paswd
+--> grep -e joe -e root /etc/passwd
+
+Grep all that not containing root
+--> grep -v root /etc/passwd
+
+to simulate and. grep everything that has word joe and bash
+--> grep -e 'joe.*bash\|bash.*joe' /etc/passwd
+--> grep -e joe /etc/passwd | grep bash
+
+egrep is actually grep -E
+and fgrep is actually grep -F
