@@ -1,0 +1,35 @@
+The mtr command is a combination of ping and traceroute commands. 
+It is a network diagnostic tool that continuously sends packets showing ping time for each hop. 
+It also displays network problems of the entire route taken by the network packets.
+
+The default behavior of the mtr command displays the traceroute report for a remote hostname or IP address. 
+To display the traceroute report, pass the hostname or IP address with it as follows
+--> mtr javatpoint.com  
+
+To show the CSV output, pass the '--csv' option with mtr command. 
+A CSV file is a comma-separated file which delimits the columns by a comma (,).
+--> mtr --csv javatpoint.com  
+
+The mtr command supports Xml format output. 
+To display the Xml output, pass the '--xml' option with mtr command. 
+The Xml format is useful for automated processing
+--> mtr --xml javatpoint.com  
+
+Another useful output format supported by mtr command is a Json file. 
+We can display the output in Json format. To display the output, execute the command with '--json' option as follows
+--> mtr --json javatpoint.com
+
+We can specify the limit of pings; it will automatically quit after completing the specified number of pings. 
+The number of pings can be seen in the 'Snt' column. To determine the number of pings, execute the command with '-c' option as follows:
+--> mtr -c 10 javatpoint.com  
+
+nd allows us to specify multiple hostnames in a file for reading. 
+The various hostnames can be specified in a text file by putting in a new line. 
+It will read them sequentially. To read file names from a file, execute the command with the '-F' option.
+--> mtr -F pings.txt
+
+Enable Report Mode
+--> mtr -r -c 10 google.com >mtr-report-google
+
+How to view hostnames and numeric IP addresses
+--> mtr -b google.com
