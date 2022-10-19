@@ -1,0 +1,47 @@
+Traceroute is a tool in Linux that allows you to investigate the routes of network packets. 
+It can help you in identifying the limiting factor of network packet journeys. 
+Traceroute is also useful for troubleshooting sluggish network connections. 
+This guide shows you how to run traceroute in Linux
+
+Traceroute works by sending packets of data to the target computer, server, or website and 
+recording any intermediate steps through which the packets travel. 
+The output of a traceroute command will be the IP addresses and domain names through which the packets pass. 
+These entries also show how long it takes for the packets to reach each destination. 
+This may explain why some websites may take longer to load than others, as the number of traffic hops can vary.
+
+Installing traceroute for debian/ubuntu
+--> sudo apt install traceroute -y
+
+The primary method for using traceroute is quite simple. 
+All traceroute requires is the destination to perform the probing. 
+The destination can be either a domain or an IP address.
+--> traceroute linuxhint.com
+--> traceroute 8.8.8.8
+
+By default, traceroute will use the default Internet Protocol with which your system is configured. 
+To manually set the IP version, follow the procedure below.
+To tell traceroute to use IPv4, use the “-4” flag:
+--> traceroute -4 linuxhint.com
+
+If there is a need to test a specific port, the port can be specified using the “-p” flag. 
+For UDP tracing, traceroute will start with the given value and increase with each probe. 
+For ICMP tracing, the value will determine the initial ICMP sequence value. 
+For TCP and others, this will be the constant destination port to connect
+--> traceroute -p <port> 192.168.0.1
+
+In some situations, the device names in the output may make the output look messy. 
+For more clarity, you can hide the device names from the output. 
+To do so, use the “-n” (no mapping) flag
+--> traceroute -n linuxhint.com
+
+By default, traceroute waits for 5 seconds to receive a response. 
+In certain situations, you may want to change the waiting time to be greater or less than 5 seconds. 
+To do so, use the “-w” flag. Note that the time value is a floating-point number.
+--> traceroute -w 6.0 linuxhint.com
+
+If there are multiple network interfaces connected to the computer, 
+then it may help to specify the network interface to use for sending packets. 
+To specify the network interface, use the “-i” flag:
+
+To route packets through a certain gateway, use the “-g” option, followed by the gateway:
+--> traceroute -I -g 192.168.0.1 linuxhint.com
