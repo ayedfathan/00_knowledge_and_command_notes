@@ -1,0 +1,78 @@
+ufw (uncomplicated firewall)
+
+is a firewall configuration tool that runs on top of iptables, included by default within Ubuntu distributions. 
+It provides a streamlined interface for configuring common firewall use cases via the command line.
+
+To check the default rule, you need to open below file
+--> cat /etc/default/ufw
+
+setting default rule for incoming and outgoing
+--> sudo ufw default allow outgoing
+--> sudo ufw default deny incoming
+
+to check ufw status
+--> sudo ufw status
+
+to enable or disable the fw, run below command.
+--> sudo ufw enable
+--> sudo ufw disable
+
+to see the rules being added to ufw
+--> sudo ufw show added
+
+To block all network connections that originate from a specific IP address, run the following command, 
+replacing the highlighted IP address with the IP address that you want to block
+--> sudo ufw deny from 203.0.113.100
+
+If you need to block a full subnet, you may use the subnet address as from parameter on the ufw deny command. 
+This would block all IP addresses in the example subnet 203.0.113.0/24
+--> sudo ufw deny from 203.0.113.0/24
+
+To block incoming connections from a specific IP address to a specific network interface, 
+run the following command, replacing the highlighted IP address with the IP address you want to block
+--> sudo ufw deny in on eth0 from 203.0.113.100
+
+To allow all network connections that originate from a specific IP address, run the following command, 
+replacing the highlighted IP address with the IP address that you want to allow access
+--> sudo ufw allow from 203.0.113.101
+
+To allow incoming connections from a specific IP address to a specific network interface, 
+run the following command, replacing the highlighted IP address with the IP address you want to allow
+--> sudo ufw allow in on eth0 from 203.0.113.102
+
+To delete a rule that you previously set up within UFW, use ufw delete followed by the rule (allow or deny) and the target specification. 
+The following example would delete a rule previously set to allow all connections from an IP address of 203.0.113.10
+--> sudo ufw delete allow from 203.0.113.101
+
+Another way to specify which rule you want to delete is by providing the rule ID. This information can be obtained with the following command
+--> sudo ufw status numbered
+and then --> sudo ufw delete 1
+
+Upon installation, applications that rely on network communications will typically set up a UFW profile 
+that you can use to allow connection from external addresses. This is often the same as running ufw allow from, 
+with the advantage of providing a shortcut that abstracts the specific port numbers a service uses and provides a user-friendly nomenclature to referenced services
+To list which profiles are currently available, run the following:
+--> sudo ufw app list
+
+To enable a UFW application profile, run ufw allow followed by the name of the application profile you want to enable, 
+which you can obtain with a sudo ufw app list command. In the following example, we’re enabling the OpenSSH profile, 
+which will allow all incoming SSH connections on the default SSH port
+--> sudo ufw allow “OpenSSH”
+
+To disable an application profile that you had previously set up within UFW, you’ll need to remove its corresponding rule.
+--> sudo ufw allow "Nginx HTTPS"
+--> sudo ufw delete allow "Nginx Full"
+
+The following command will allow only SSH connections coming from the IP address 203.0.113.103
+--> sudo ufw allow from 203.0.113.103 proto tcp to any port 22
+
+To allow all incoming HTTP and HTTPS (ports 80 and 443) connections, run
+--> sudo ufw allow proto tcp from any to any port 80,443
+
+Mail servers, such as Sendmail and Postfix, typically use port 25 for SMTP traffic. 
+If your server shouldn’t be sending outgoing mail, you may want to block that kind of traffic. 
+To block outgoing SMTP connections, run
+--> sudo ufw deny out 25
+
+
+
