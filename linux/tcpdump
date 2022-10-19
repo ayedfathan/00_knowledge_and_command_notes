@@ -17,7 +17,9 @@ To capture the packet from any interfaces. Stop the data capture with control-c
 To limit the number of packets captured and stop tcpdump, use the -c (for count) option.
 --> sudo tcpdump -i any -c 5
 
-By default, tcpdump resolves IP addresses and ports into names. When troubleshooting network issues, it is often easier to use the IP addresses and port numbers; disable name resolution by using the option -n and port resolution with -nn
+By default, tcpdump resolves IP addresses and ports into names. When troubleshooting network issues, 
+it is often easier to use the IP addresses and port numbers; 
+disable name resolution by using the option -n and port resolution with -nn
 --> sudo tcpdump -i any -c5 -nn
 
 Sample of output format.
@@ -25,11 +27,13 @@ Sample of output format.
 
 The first field, 08:41:13.729687, represents the timestamp of the received packet as per the local clock.
 Next, IP represents the network layer protocol—in this case, IPv4. For IPv6 packets, the value is IP6.
-The next field, 192.168.64.28.22, is the source IP address and port. This is followed by the destination IP address and port, represented by 192.168.64.1.41916.
+The next field, 192.168.64.28.22, is the source IP address and port. 
+This is followed by the destination IP address and port, represented by 192.168.64.1.41916.
 After the source and destination, you can find the TCP Flags Flags [P.].
 Next is the sequence number of the data contained in the packet.
 
-To filter packets based on protocol, specifying the protocol in the command line. For example, capture ICMP packets only by using this command
+To filter packets based on protocol, specifying the protocol in the command line. For example, 
+capture ICMP packets only by using this command
 --> sudo tcpdump -i any -c5 icmp
 
 Limit capture to only packets related to a specific host by using the host filter
@@ -45,17 +49,23 @@ You can also filter packets based on the source or destination IP Address or hos
 you can use the dst filter to filter by destination IP/hostname
 --> sudo tcpdump -i any -c5 -nn dst 192.168.122.98
 
-You can also combine filters by using the logical operators and and or to create more complex expressions. For example, to filter packets from source IP address 192.168.122.98 and service HTTP only, use this command
+You can also combine filters by using the logical operators and and or to create more complex expressions. 
+For example, to filter packets from source IP address 192.168.122.98 and service HTTP only, use this command
 --> sudo tcpdump -i any -c5 -nn src 192.168.122.98 and port 80
 --> sudo tcpdump -i any -c5 -nn "port 80 and (src 192.168.122.98 or src 54.204.39.132)"
 
-Another useful feature provided by tcpdump is the ability to save the capture to a file so you can analyze the results later. This allows you to capture packets in batch mode overnight, for example, and verify the results in the morning. It also helps when there are too many packets to analyze since real-time capture can occur too fast.
+Another useful feature provided by tcpdump is the ability to save the capture to a file so you can analyze the results later. 
+This allows you to capture packets in batch mode overnight, for example, and verify the results in the morning. 
+It also helps when there are too many packets to analyze since real-time capture can occur too fast.
 To save packets to a file instead of displaying them on screen, use the option -w (for write)
 --> sudo tcpdump -i any -c10 -nn -w webserver.pcap port 80
 
-Tcpdump creates a file in binary format so you cannot simply open it with a text editor. To read the contents of the file, execute tcpdump with the -r (for read) option
+Tcpdump creates a file in binary format so you cannot simply open it with a text editor. 
+To read the contents of the file, execute tcpdump with the -r (for read) option
 --> tcpdump -nn -r webserver.pcap
 
-You can also use any of the filters we've discussed to filter the content from the file, just as you would with real-time data. For example, inspect the packets in the capture file from source IP address 54.204.39.132 by executing this command
+You can also use any of the filters we've discussed to filter the content from the file, 
+just as you would with real-time data. 
+For example, inspect the packets in the capture file from source IP address 54.204.39.132 by executing this command
 --> tcpdump -nn -r webserver.pcap src 54.204.39.132
 
