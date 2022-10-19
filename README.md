@@ -1,4 +1,4 @@
-#Knowledges and Commands Notes
+# Knowledges and Commands Notes
 
 This repo will be used to store notes from knowledges learning as well as command cheat sheets.
 After reading series of book, at the same time you gain more info, it will be hard also to maintain that info properly.
