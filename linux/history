@@ -1,0 +1,34 @@
+history command is used to view the previously executed command. This feature was not available in the Bourne shell. 
+Bash and Korn support this feature in which every command executed is treated as the event and is associated 
+with an event number using which they can be recalled and changed if required. 
+These commands are saved in a history file. In Bash shell history command shows the whole list of the command.
+--> history
+
+show the limited number of commands that executed previously as follows
+--> history 5
+
+To execute the command number 120 in the history
+--> !120
+
+To print command before executing so that a wrong command does not get executed use :p after event number of command.
+--> !120:p
+
+This command can also be used along with grep
+--> history | grep passwd
+
+execute the most recent command
+--> !!
+
+To browse the history without history command, is using control-r in the shell, 
+type your search and then pres control-r for keep on searching.
+If you can get used to it, this is far more faster than using history command
+
+To make sure you command doesn't written into the history file, put space before typing your commnad.
+--> space space and then <command>
+
+remove the command from the history
+--> history -d 123
+
+remove all command from the history
+--> history -c
+

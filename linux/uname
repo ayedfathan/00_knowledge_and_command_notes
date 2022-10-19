@@ -1,0 +1,29 @@
+prints the name, version and other details about the current machine and the operating system.
+For basic usage, just execute the 'uname' command sans options.
+--> uname
+
+To print the kernel name
+--> uname -s
+
+To print the kernel release
+--> uname -r
+
+To print the kernel version
+--> uname -v
+
+To print the hostname
+--> uname -n
+
+To print machine hardware name 
+--> uname - m
+
+To print processor type 
+--> uname -p
+
+To print the operating system
+--> uname -o
+
+To print all information in one go
+--> uname -a
+
+
