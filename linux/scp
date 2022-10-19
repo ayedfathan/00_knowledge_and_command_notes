@@ -1,0 +1,56 @@
+SCP is an acronym for Secure Copy Protocol. It is a command line utility that allows the user to securely 
+copy files and directories between two locations usually between unix or linux systems.
+
+SCP is an acronym for Secure Copy Protocol. It is a command line utility that allows the user to securely 
+copy files and directories between two locations usually between unix or linux systems.
+In simpler words we can say that SCP is a safer option for the cp (copy) command.
+
+It is also important to note that SCP uses encryption over an SSH (Secure Shell) connection, 
+this ensures that the data being transferred is protected from suspicious attacks.
+
+we have a file test.txt and we need to copy it to a remote server
+--> scp test.txt userbravo@destination:/location2
+
+We are not limited to the number of files we can copy. 
+Let's say we are on our desktop in the folder called web where we have .php file extensions 
+and we need to copy the to remote server home directory
+--> scp *.php userbravo@destination_host:/~/
+
+Let's say you wanted to copy a file named test.txt and save it with a different name 
+in the remote server this time round using an option of port. The command will be:
+--> scp -P 8080 test.txt userbravo@destination_host:/user/home/test2.txt
+
+The linuxcheatsheet file is stored on the kali user’s home directory, the user I will authenticate. 
+Therefore after the colon, I don’t need specify the path because it's the default one, which is the home directory, 
+and I just type the filename (“linuxcheatsheet”). Then, I specify the current directory as the local location to store the file by typing a dot
+--> scp linuxcheatsheet lary@192.168.1.100: ./
+--> scp lary@192.168.1.100:~/linuxcheatsheet ./
+
+The beauty of using SCP in file transferring, is that it does not only allow connection 
+between local machines but also it allows for you to connect to remote servers.
+--> scp user1@host1.com:/files/test.txt user2@user2.com:/files
+
+Let's say we wanted to copy files 1,2,3 and 4. The command would look like below:
+--> scp file1.txt file2.txt file3.txt file4.txt user1@host1.com:/home/user/Desktop
+
+Another parameter that may be useful is the “-l” parameter. 
+The “-l” parameter will limit the bandwidth to use. It will be useful if you do an automation script to copy a lot of files, 
+but you don’t want the bandwidth is drained by the SCP process.
+--> scp -l 400 Label.pdf mrarianto@202.x.x.x:.
+The 400 value behind the “-l” parameter is mean that we limit the bandwidth for the SCP process to only 50 KB/sec. 
+One thing to remember is that bandwidth is specified in Kilobits/sec (kbps). It is mean that 8 bits are equal to 1 byte.
+While SCP counts in Kilobyte/sec (KB/s). So if you want to limit your bandwidth for SCP maximum of only 50 KB/s, you need to set it into 50 x 8 = 400
+
+Sometimes we need to copy the directory and all files/directories inside it. 
+It will be better if we can do it in 1 command. SCP supports that scenario using the “-r” parameter.
+--> scp -r documents mrarianto@202.x.x.x:.
+
+If you choose not to see progress meter and warning / diagnostic messages from SCP, you may disable it using the “-q” parameter
+--> scp -q Label.pdf mrarianto@202.x.x.x:.
+
+You can run scp in verbose mode by adding the -v option which sets the debug level to 2. 
+Doing so, prints debugging information in the output which can help you when troubleshooting.
+Add the -v option after scp to enable verbose mode
+--> scp -v Desktop/sample_example.txt root@147.182.143.27:/home/remote_dir
+
+
