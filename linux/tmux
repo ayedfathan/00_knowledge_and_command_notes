@@ -10,7 +10,7 @@ Session
 
 Binding h,j,k,l to resize the pane in your windows.
 run below command from the shell before starting tmux or put it in the tmux config file 
---> tmux bind-key -n h resize-pane -L 1 # resize pane to the left 1 pixels
---> tmux bind-key -n l resize-pane -R 1 # resize pane to the left 1 pixels
---> tmux bind-key -n k resize-pane -U 1 # resize pane to the left 1 pixels
---> tmux bind-key -n j resize-pane -D 1 # resize pane to the left 1 pixels
+--> tmux bind-key -n C-h resize-pane -L 1 # resize pane to the left 1 pixels with control-h
+--> tmux bind-key -n C-l resize-pane -R 1 # resize pane to the left 1 pixels with control-l
+--> tmux bind-key -n C-k resize-pane -U 1 # resize pane to the left 1 pixels with control-k
+--> tmux bind-key -n C-j resize-pane -D 1 # resize pane to the left 1 pixels with control-j
