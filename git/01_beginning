@@ -1,0 +1,89 @@
+WHY WE NEED VERSION CONTROL
+You need to have the flexibility to go backward or forward in your project.
+especially when file or source code update simultaneously by many people.
+All this updates need to be tracked and recorded.
+
+just like playing video game, when you have several save snapshot.
+when you fail, you can go back and restore the last save snapshot, instead of restarting from beginning.
+
+he first step to let our project managed by git is to create git repository.
+What is exactly git repository?
+So to be able to save our changes and have snapshot of it periodically,
+git need a place to store these snapshots. That place is called git repository.
+You can just initialize a folder to be manage by git with git init command.
+automatically after that, the folder will be git enabled.
+if you list hidden forlder after git init, you will see .git folder.
+that folder is actually the database for git/ the repository for git.
+
+once again, i want my project manage by git. go to the root folder of the project.
+And then run --> git init
+
+After that, before we are creating our changes and create the snapshots.
+We need to introduce our self to git by running below commnad from the root folder of our repository
+--> git config --global user.name "said azli"
+--> git config --global user.email "said.azli@gmail.com"
+
+so what is the typical interaction with git?
+it is a cyle of :
+Continue working and do changes --> commiting you changes and then back again to 1st cyle.
+and also in between you might sometimes need to revert your changes and then continue working.
+
+lets try our first changes and commit.
+inside the git folder, you can create a directory and then create a file, and type anything inside the file.
+once done you can save the file.
+at this point, you file still unknown by git repository.
+to add it to the repository you will run 
+--> git add <file name> or you can run git add .
+and then commit your changes to git ith below command
+--> git commit -a -m "your commit message"
+
+by this steps. your file curently managed by git inside git repository
+
+What does it mean to commit ?
+committing to git is 2 steps process. first add and then commit
+The first thing you need to know is only the file you add will be committed to git repository.
+Let say you have 2 files, file1 and file2. and you add only file 1.
+so when commit, only file 2 will be managed by git, file 2 still outside of git management.
+every commit in git stamped with unique identifier.
+This identifier is computed using a bunch of metadata, including your full name, the time changes made,
+the time you commit, your commit message and information derived from your commit.
+so the commit identifier is unique across all repo in the world.
+
+The secret to good history, is first to add, then commit. and don't forget to give meaningfull message in commit.
+
+Why do we need to run add and commit, why not just commit.
+This is happen due to the design of git repository.
+The git repository itself divided into 2 part.
+First part called index
+second part called object database
+
+when we run git add, git make a copy of the file into index space.
+You can think index as staging area. Wherein we can put things till we are sure we want to commit them.
+And then wehen we run git commit, it takes the content of the staging area and store those in the object database.
+also known as git memory bank.
+
+The three stages of git.
+1. do changes in the working directory
+2. git add, copy the content of the working directory to index space/staging area
+3. git commit, copy the content of staging area into object database
+
+Throughout, keep in mind that git is moving copies of your file from the woking directory, to the index, 
+and to its object database.
+
+so file in git folder can be in below status
+- Untracked, file never been added to index
+- Tracked, file that has been added to index or to object database
+	- staged, 
+	- unmodified
+	- modified
+
+Untracked --add--> Staged --commit---> unmodified --edit---> modified 
+								|
+								|
+	back to staged----------------add------------------------	
+
+
+To check the status of your repository.
+--> git status
+
+
