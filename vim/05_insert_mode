@@ -21,3 +21,11 @@ the simple way is, in insert mode, i press control-o and then zz, and then i can
 
 paste from register with out leaving insert mode
 --> control-r and then press 0
+
+
+We have also replace mode, replace mode identical to insert mode.
+Except it overwrites existing text in the document. and not entering insert mode
+r --> replace single char
+R --> replace multiple character
+
+

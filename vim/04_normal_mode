@@ -52,4 +52,10 @@ or cursor from any char in that word and then press gUaw or gUiw and so on.
 dap -- > delete one paragraph
 gUap --> change one pragraph case to upper case
 
+f(char) --> go to the next occurence of char
+F(char) --> go to the previous occurence of char
+t(char) --> go to the next occurence of char, but stop 1 char before
+T(char) --> go to the previous occurence of char, but stop 1 char before
+to navigate next and previous within line search use ; for next and , for previous
+
 

@@ -1,0 +1,88 @@
+Command mode activated with pressing :
+:[range]delete [x]
+Delete specified lines [into register x]
+
+:[range]yank [x]
+Yank specified lines [into register x]
+
+:[line]put [x]
+Put the text from register x after the specified line
+
+:[range]copy {address}
+Copy the specified lines to below the line specified by {address}
+
+:[range]move {address}
+Move the specified lines to below the line specified by {address}
+
+:[range]join
+Join the specified lines
+
+:[range]normal {commands}
+Execute Normal mode {commands} on each specified line
+
+:[range]substitute/{pattern}/{string}/[flags]
+Replace occurrences of {pattern} with {string} on each specified line
+
+:[range]global/{pattern}/[cmd]
+Execute the Ex command [cmd] on all specified lines where the {pattern} matches
+
+activate your line number for ease of use 
+:set number
+:set nu
+deactivate it, just add no
+:set nonumber
+:set nonu
+
+Changing the vi theme to something easier to see
+:color desert
+you can press tab after color to see theme options
+
+:.d --> delete current line
+:.t6 --> copy current line to below line 6
+:6t. --> copy line 6 to below current line
+:t. --> duplicate current line, similar to yyp in normal mode
+:3,10d --> delete from line 3 to 10
+:3,10y --> yank line 3 to 10 to register for copy
+:3,10t20 --> copy line 3 to 10 and put it under line 20
+:3,10m20 --> move line 3 to 10 into line 20
+:3,10normal A; --> for line 3 to 10 execute A(go to end of line and append) and the insert ;
+simply saying appending ; to the end of line for line 3 to 10
+and you can also use visual selection for range. after you activate visual mode then press :
+and then you can continue with command available as you wish
+:0 --> go to the start of the file, similar to gg
+:$ --> go to the end of file, similar to G
+:%normal A; --> for all line in the file, add ; to the end of each line
+
+let say you have text like below and want to remove the left trailing space
+1. press V on the second line and then select also the other line
+2. press : and then type normal ^v0x --> for each line selection execute normal mode command,
+ ^ go to the first char in the line,
+v do visual char selection, 0 select until start of the line, x delete the text within selection
+
+ashashajshdada
+             sakjasjajskajsak
+                              jasksjakjsjaksja
+                                             ksajsakjsajksjaksjak
+                                                        jsaksjaskjaksajkjsk
+
+
+
+to recall command from history, you can press : and then arrow up and down, just like history in shell
+:!(shell command) --> execute shell command
+:!shell --> go to shell prompt
+
+let say you have below line in you vim
+first name,last name,email
+doe,jane@example.com
+neil,drew@vimcasts.org
+smith,john@example.com
+
+
+and you want to sort from second line to fourth line using last name in vim using shell command.
+within vim you can do
+:2,5 ! sort -k2 -t,
+
+let say you open config file without root, and do modification, when you want to save. it will failed.
+since you forget the sudo. you can do below without have to repeat your task after run vim with sudo
+:w ! sudo tee % > /dev/null
+

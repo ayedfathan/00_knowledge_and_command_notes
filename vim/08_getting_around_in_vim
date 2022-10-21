@@ -1,0 +1,31 @@
+To speed up your movement within vim, beside using arrow button or h,j,k,l button.
+You can utilize below command in normal mode
+f(char)
+F(char)
+t(char)
+T(char)
+
+to navigate use ; for next and , for previous
+
+also below command
+/(pattern)
+?(pattern)
+
+to search next pattern or previous pattern.
+use n and N to navigate
+
+in vim you can have long line that looks multiple line
+so vim recognize real line and display line.
+what is real line, line that has number if you enable number
+and display line is the line that has no number.
+to move around between display line add g before the arrow button
+
+moving within word
+w --> go to the start of next word
+e --> go to the end of next word
+b --> got to the start of previous word
+ge --> go to the end of previous word
+
+and you can capitalize them for more range, not separated by space or special char
+
+

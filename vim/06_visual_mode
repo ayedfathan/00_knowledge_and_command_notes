@@ -1,0 +1,30 @@
+Vim visual mode allow us to do text selection, line selection and also vertical selection.
+v --> visual char, and then you can follow with motion and then action
+V --> visual line, and then you can follow with motion and then action
+control-v --> vertical motion, and then you can follow with motion and then action
+gv --> reselect the last selection
+within visual mode you can press o, to go to the other end of selection
+
+you can also after selection pres : to enter command mode and then execute your command.
+
+sample :
+vww --> char visual mode and then select 2 word forward
+vbb --> char visual mode and then select 2word before
+vt" --> char visual mode and then select next occurance of " but stop 1 char before
+vf" --> char visual mode and then select next occurence of "
+v$ --> char visual mode and then select until end of line
+v0 --> char visul mode and then select until beginning of line
+vf"x --> char visual mode, select until next " and then delete text within selection
+Vj> --> line visual mode, select also the next line, and then indent out
+Vjj< --> line visual mode, and then select next 2 lines and then indent in
+Vhhx --> line visual mode, and then select 2 previous line also and then delete text in selection
+
+use control-v if you want to do vertical manupulation and below button if you want to have some action.
+after control-v and motion :
+shift-i --> to insert new text in the vertical selection
+x --> to delete the text in vertical selection
+c --> to change the text in vertical selection
+
+
+
+
