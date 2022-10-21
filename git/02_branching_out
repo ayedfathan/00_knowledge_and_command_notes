@@ -1,0 +1,85 @@
+Branches allow us to work on multiple, completely disconnected pieces of work on the same codebase at the same time.
+You are currently working on some changes, and then you were requested to fix certain bug.
+You current work is not done, and then you commit the changes and then work on the bug and commit again.
+This is done wrongly, since it could introduces more problem than he bug you want to fix.
+And also you were requested to fix the bug, not delivering also in it your changes.
+
+This type of situation can be solve by using branches.
+A commit represent a point in time, and a branch represent  a series of commits.
+Recall that a series of commits is also commit history. So branches are different commit histories, all in the same repository!
+At any point you can choose to create a new branch, switch between branches, discard a branch and even merge branches.
+
+at default after git init, you will have one branch with name master.
+managing branches in git is using another command, namely also branch.
+We can use branch command to create new branch, list all the branchesin our repository,
+and even delete branches. And this can happen directly from our shell terminal.
+
+creating new branch will be like 
+--> git branch <new branch name>
+
+list down all the branches currently available
+--> git branch
+and the one with *, is the current active branch
+
+how many branches that we could have, as many as we wanted.
+However, usually we use a branch to work on a small, isolated changes, then merge it into "integration branch" when we done and the delete the branch. This will keep a nice and tidy repository.
+Master branch or main branch is the typical "integration branch" we mean.
+
+TO switch or to activate another branch, we use switch command. which take 1 argument, the branch name.
+--> git switch <branch name>
+After you switch, make sure to check your current active branch using git branch command
+
+older version of git, instead of using git switch, it used git checkout command.
+
+or you can also switch to a branch and create it in 1 command
+--> git switch -c <my new branch name>
+this will create a new branch and then automatically switch to it
+
+
+be carefull when you add file into a branch, make sure you add the file name, instead of only using .
+the file before commit, will be seen in all your branches. but after commit.
+it can only be seen by the branch that active when you commit.
+
+Integration branch play critical role in your git repository. REMEMBER, what make integration branch special is just convention.
+Any branch can be made as an integration branch that serve as a place for everything.
+big, small, features, bug fixes --> all comes together.
+
+Bringing the work done in separate branches together is called MERGING.
+And git special command merge for it. Merging in git typically involve 2 branches.
+The branch that you are on, called as proposer.
+And the branch that you wish to merge, called proposee.
+
+for example we have branch master and bug-fix-account-name.
+And we want to merge bug-gix-account-name to master. here is the steps
+--> git switch master
+--> git merge bug-fix-account-name
+
+Deleting branch after safely merged.
+--> git branch -d <branch name>
+
+to delete branch which not merged yet
+--> git branch -D <branch name>
+
+if you delete a branch wrongly, you can recover the branch.
+after you delete the branch, it will print the commit id of the branch being deleted.
+and you can restore it like below
+--> git branch <branch name> <base commit id>
+this will undo the accidental delete
+
+make habit to delete branch once merged, keep it clean and tidy.
+if you don't delete branch you no longer needed. Your branch list getting longer and
+it gets harder to figure out which branch are "active"  and which one already merged and no longer needed.
+
+REMEMBER : branch is used to work on a single thing. Think of them as single-use container like a coffee cup.
+Once you got your caffein, you simply toss away the container.
+
+Typical workflow
+1. base your new branch  on commit on integration branch
+2. merge back into the integration branch once you are done
+3. don't reuse branches
+	typical workflow create new branch, getting your work done,
+	merging into integration branch, and the delete the feature branch.
+	again, remember, you can always create a new branch if you need it.
+	DON'T REUSE
+
+
