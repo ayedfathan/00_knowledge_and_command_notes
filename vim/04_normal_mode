@@ -1,0 +1,55 @@
+Deleting command.
+we have sentences like this : The end is tonight
+if you put your cursor under h in tonight and press db, it will delete to the beginning of the word.
+The remaining sentence will be --> The end is ht
+
+if you put your cursor under t in tonight and press dw, it will delete tonight.
+The remaining sentence will be --> The end is 
+
+if you put your cursor in any char in tonight and press daw, it will delete tonight and also
+the space before and after tonight
+
+if you put your cursor in any char in tonight and press diw, it will delete only tonight,
+the space between and after tonight remained there.
+
+Note : i usually use in changing, and a used in deleting. since in changing you want the space still there
+
+Some operator in normal mode vim can be combined with motions.
+such as above, d is combined with the motion, in this case the motion is b, w, aw, iw.
+
+sample of other command that can be motion to d.
+We have this sentence : I want you all to be here tonight. Do you understand?
+we have command f(char) in normal mode, it search the next char on that line.
+say for example my cursor is at a in word all. and then i press f and dot.
+it will move the cursor to dot.
+
+another search in line is t(char) it will move the cursor 1 char before the char wanted.
+so if your cursor in a at all, and pres t and dot. your cursor will move to last t in tonight.
+
+and you can cobine this motion with d or c or other.
+df. --> delete char from cursor until the next dot
+cf. --> delete the char from cursor until next dot and enter the insert mmode to change it
+dt. --> delete the char from cursor until 1 char before the next dot.
+
+some operator in normal mode that can be follow with motion.
+c --> change
+d --> delete
+y --> yank into register
+g~ --> swap the case from lower to upper, or upper to lower
+gu --> swap the case to lower
+gU --> swap the case to upper
+> --> shift right
+< --> shift left
+v --> entering char visual mode
+
+how to combine.
+say i want to change the case for the first letter in the word.
+move the cursor into the word and then press g~x
+if you want to change to upper case for one word.
+move to the first letter of the word and then press gUw.
+or cursor from any char in that word and then press gUaw or gUiw and so on.
+
+dap -- > delete one paragraph
+gUap --> change one pragraph case to upper case
+
+

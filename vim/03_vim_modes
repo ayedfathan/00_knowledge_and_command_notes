@@ -1,0 +1,21 @@
+vim has 4 modes that you can use:
+1. normal mode
+2. insert mode
+3. visual mode
+4. command mode
+
+Normal mode is when you are not editing or inserting a text inside your file through vim.
+and this is the default mode being used. to change back to normal mode from any other mode pres esc.
+If you are not sure whether you are in normal mode or not, press esc a couple of time.
+
+Insert mode, is the mode where you can type anything that you want into your editor.
+we will learn several action to move from normal mode to insert mode.
+And when you want to go back to normal mode or to other mode. 
+put simply want to get out from insert mode, pres esc
+
+Visual mode it the block mode, where you can select chars, words, line and even vertical block.
+
+Command mode is the mode that we enter when we want to execute command in vim, sucah as saving your file,
+searching for work, etc.
+
+

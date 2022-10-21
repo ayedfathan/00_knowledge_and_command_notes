@@ -1,0 +1,33 @@
+Our work is repetitive in nature. and vim is optimized for repetition.
+Its eficiency stems from the way it tracks our most recent actions.
+We can always replay the last change with a single keystroke.
+Powerful as it sounds, it's useless unless we learn to craft our action so that 
+they perform a useful unit of work when replayed.
+
+REMEMBER : Mastering this concept is the key to becoming effective in vim
+
+--------------------------------------
+The dot command is our starting point.
+--------------------------------------
+
+To understand the power of dot command. We have to realize that the "last action"
+could be one of many things. An action could act at the level of individual characters,
+entire lines, or even the whole file.
+
+for example, press x in normal mode will delete the character under the cursor.
+if you want to delete again another character under the cursor, you just need to press (.)
+
+press dd in certain line, will delete the line under the cursor.
+and if you want to delete another line under the cursor,
+you don't have to press dd again, you just need to press dit(.)
+
+so you can imagine, the power of it, consider dot as mini macro inside vim.
+the more complex and repeatable you action, the more powerful the impact of dot(.)
+
+And the other important thing is to know your reverse gear when editing something in vim.
+if You want to undo what you have made, press u in normal mode
+if you want to undo all the changes in one line, go to that line and press U in normal mode
+if you want to redo your undo, press control-r in normal mode
+if you have read and follow the exercise in vimtutor, you should already be familiar with this!!!
+
+

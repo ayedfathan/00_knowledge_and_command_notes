@@ -1,0 +1,23 @@
+besides using backspace to delete char or words in insert mode, you can use also
+control-h, delete previous char
+control-w, delete previous word
+control-u, delete from cursor until start of line
+
+to move to the next word in insert mode
+alt-w move to the next word beginning
+alt-e move to the next word ending
+alt-b move to the previous word beginning
+
+getting out from inser mode to normal mode, press esc.
+say you want to execute normal mode command, but you don't want to comeout from insert mode.
+press control-o, it will switch the mode to normal and then press you action, once done it will automatically back to insert mode.
+this is very good if you want just need to execute 1 normal mode command while in insert mode.
+
+for example zz, is arranging my cursor to be in the middle of the screen, it will re display the layout.
+i am in the middle of editing. i can press esc, and then zz and the got the cursor i want and 
+then press i to enter insert mode.
+the simple way is, in insert mode, i press control-o and then zz, and then i can continue editing form where i left.
+
+
+paste from register with out leaving insert mode
+--> control-r and then press 0
