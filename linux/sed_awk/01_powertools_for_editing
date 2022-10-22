@@ -1,0 +1,27 @@
+sed is a stream editor. in details, a "non-interctive" stream-oriented editor.
+Because like many unix/linux program, input flow through it and directed to standard output.
+
+sed offers a search and replace facility that can be applied globally to single file or a group of files.
+Think about making 20 different edits in over 100 files in a matter of minutes.
+Then you get the idea of how powerfull sed is.
+
+awk is actually a programming language. Which you have more control of what you want the computer to do.
+Sed is easily seen as the flip side of interactive editing. 
+A sed procedure corresponds closely enough to how you would apply the editing commands manually. 
+Sed limits you to the methods you use in a text editor. 
+Awk offers a more general computational model for processing a file.
+
+There are four hurdles on the way to mastering sed and awk. You must learn:
+- How to use sed and awk
+- To apply UNIX regular expression syntax
+- How to interact with the shell. 
+	While not directly related to sed and awk themselves, 
+	managing the interaction with the command shell is often a frustrating problem, 
+	since the shell shares a number of special characters with both programs.
+- The knack of script writing. This is the most difficult, rather like a series of high hurdles.
+	With sed, you have to learn a set of single-letter commands. 
+	With awk, you have to learn the statements of a programming language. 
+	To get the knack of script writing, though, you simply must pore over lots of examples and, 
+	of course, must try your hand at writing scripts yourself.
+
+

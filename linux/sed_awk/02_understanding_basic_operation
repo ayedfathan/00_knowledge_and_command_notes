@@ -1,0 +1,117 @@
+If you are starting out to learn sed and awk, you can benefit from looking at how much they have in common.
+	They are invoked using similar syntax.
+	They are both stream-oriented, reading input from text files one line at a time and directing the result to standard output.
+	They use regular expressions for pattern matching.
+	They allow the user to specify instructions in a script.
+
+This chapter looks at the command-line syntax of sed and awk and the basic structure of scripts. 
+It also offers a tutorial, using a mailing list, that will give you a taste of script writing. 
+It is valuable to see sed and awk scripts side-by-side before you concentrate on either one of them.
+
+Like almost all UNIX programs, sed and awk can take input from standard input and send the output to standard output. 
+If a filename is specified, input is taken from that file. The output contains the processed information. 
+Standard output is the display screen, and typically the output from these programs is directed there. 
+It can also be sent to a file, using I/O redirection in the shell, but it must not go to the same file that supplies input to the program.
+
+A script is where you tell the program what to do. At least one line of instruction is required. 
+Short scripts can be specified on the command line; 
+longer scripts are usually placed in a file where they can easily be revised and tested. 
+In writing a script, keep in mind the sequence in which instructions will be executed and how each instruction changes the input line.
+
+In sed and awk, each instruction has two parts: a pattern and a procedure. 
+The pattern is a regular expression delimited with slashes (/). 
+A procedure specifies one or more actions to be performed.
+
+When all the applicable instructions have been interpreted and applied for a single line, 
+sed outputs the line and repeats the cycle for each input line. Awk, on the other hand, 
+does not automatically output the line; the instructions in your script control what is finally done with it.
+
+There is file named list in the current folder that we can use for practice.
+Replacing MA to Massachusetts in file list
+--> sed 's/MA/Massachusetts/' list
+
+Replacing ' MA' to ', Massachusetts' in file list
+--> sed 's/ MA/, Massachusetts/' list
+
+if you have multiple instruction, you can go with one sed command like below.
+separate instruction using semicolon(;)
+--> sed 's/ MA/, Massachusetts/; s/ PA/, Pennsylvania/' list
+
+Precede each instruction using flag e
+--> sed -e 's/ MA/, Massachusetts/' -e 's/ PA/, Pennsylvania/' list
+
+Use the multiline entry capability of the Bourne shell
+$ sed ' 
+> s/ MA/, Massachusetts/
+> s/ PA/, Pennsylvania/
+> s/ CA/, California/' list 
+
+
+or you can use file to store all the 3 expression related to MA, PA and CA into a file,
+let say, we named it sedexpr, then we can execute sed with below command
+--> sed -f sedexpr list
+
+Unless you are redirecting the output of sed to another program, 
+you will want to capture the output in a file. 
+This is done by specifying one of the shell’s I/O redirection symbols followed by the name of a file
+--> sed -f sedexpr list > newlist
+
+The default operation of sed is to output every input line. 
+The -n option suppresses the automatic output. 
+When specifying this option, each instruction intended to produce output must contain a print command, p
+--> sed -n -e 's/MA/Massachusetts/p' list
+
+Like sed, awk executes a set of instructions for each line of input. 
+You can specify instructions on the command line or create a script file.
+For command lines, the syntax is:
+--> awk 'instructions' files
+Awk programs are usually placed in a file where they can be tested and modified. 
+The syntax for invoking awk with a script file is:
+--> awk -f script files
+
+Awk, in the usual case, interprets each input line as a record and each word on that line, 
+delimited by spaces or tabs, as a field. (These defaults can be changed.)
+One or more consecutive spaces or tabs count as a single delimiter. 
+Awk allows you to reference these fields, in either patterns or procedures. 
+$0 represents the entire input line. $1, $2, ... refer to the individual fields on the input line. 
+Awk splits the input record before the script is applied.
+
+The first example contains a single instruction that prints the first field of each line in the input file
+--> awk '{ print $1 }' list
+
+In the next example, a pattern “/MA/” is specified but there is no procedure. 
+The default action is to print each line that matches the pattern.
+--> awk '/MA/' list
+This is similar with --> grep MA list
+
+Print the first field of line that contain MA
+--> awk '/MA/ {print $1}' list
+
+Print the first field from list file, where field separator is coma and line containing MA
+--> awk -F, '/MA/ {print $1}' list
+
+Do not confuse the -F option to change the field separator with the -f option to specify the name of a script file.
+In the next example, we print each field on its own line. Multiple commands are separated by semicolons
+--> awk -F, '{ print $1; print $2; print $3 }' list
+another sample to make it 1 line with - separator
+--> awk -F, '/MA/ {print $1 " - " $2 " - " $3}' list
+
+Our examples using sed changed the content of incoming data. 
+Our examples using awk rearrange the data. In the preceding awk example, 
+note how the leading blank is now considered part of the second and third fields
+
+Using sed and awk together
+In UNIX, pipes can be used to pass the output from one program as input to the next program. 
+Let’s look at a few examples that combine sed and awk to produce a report
+$ sed '
+s/ MA/, Massachusetts/
+s/ VA/, Virginia/
+s/ OK/, Oklahoma/
+s/ PA/, Pensylvania/
+s/ CA/, California/' list | awk -F, '{print $3 "," $4}'
+
+While the result of this program is not very useful, it could be passed to sort | uniq -c, 
+which would sort the states into an alphabetical list with a count of the number of occurrences of each state.
+
+Check out in this folder for script awk_sed and awk_sed2, to see the combination of awk and sed
+

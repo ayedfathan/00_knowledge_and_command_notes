@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Replacing the State Code in file list into full word and separated it with comma
+sed '
+s/ MA/, Massachusetts/
+s/ VA/, Virginia/
+s/ OK/, Oklahoma/
+s/ PA/, Pensylvania/
+s/ CA/, California/
+' list |
+# The output after replacement that sorted using field 4, the name of the state
+# The fields separated by comma (,)
+sort -t, -k 4 |
+# Print out the data using grouping format
+# First print out the state name
+# and then print out the other informaion of the person
+awk -F, '
+$4 == LastState {
+		 print "\t" $1 " - " $2 " - " $3
+		}
+$4 != LastState {
+		 LastState = $4
+		 print $4
+		 print "\t" $1 " - " $2 " - " $3
+		}
+'
