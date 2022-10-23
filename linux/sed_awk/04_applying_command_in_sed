@@ -1,0 +1,66 @@
+Sed applies the entire script to the first input line before reading the second input line and applying the editing script to it. 
+Because sed is always working with the latest version of the original line, 
+any edit that is made changes the line for subsequent commands. Sed doesn’t retain the original. 
+This means that a pattern that might have matched the original input line may no longer match the line after an edit has been made.
+
+Let’s look at an example that uses the substitute command. 
+Suppose someone quickly wrote the following script to change “pig” to “cow” and “cow” to “horse”
+s/pig/cow/g
+s/cow/horse/g
+
+The result there will be no cow, since it will be changed to horse.
+To fix this sequence you can switch the subtitute command, become :
+s/cow/horse/g
+s/pig/cow/g
+
+Check out some delete script using address in sed, sample_script/delete_blank_line_sed
+also this script sample_script/extract_header
+
+Braces ({}) are used in sed to nest one address inside another or to apply multiple commands at the same address. 
+You can nest addresses if you want to specify a range of lines and then, within that range, specify another address. 
+For example, to delete blank lines only inside blocks of header file, use the following command:
+/^HEADER FILE/,/^END OF HEADER/{
+      /^[[:blank:]]*$/d
+}
+
+Sed doesn't make change to the input file.
+To capture the output you need to use redirection
+--> sed -f sedscr testfile > newfile
+
+The redirection symbol “>” directs the output from sed to the file newfile. 
+Don’t redirect the output from the command back to the input file or you will overwrite the input file. 
+This will happen before sed even gets a chance to process the file, effectively destroying your data.
+
+One important reason to redirect the output to a file is to verify your results. 
+You can examine the contents of newfile and compare it to testfile. 
+If you want to be very methodical about checking your results (and you should be), 
+use the diff program to point out the differences between the two files.
+--> diff testfile newfile
+
+This command will display lines that are unique to testfile preceded by a “<” and 
+lines unique to newfile preceded by a “>”. When you have verified your results, 
+make a backup copy of the original input file and then use the mv command to overwrite the original with the new version. 
+Be sure that the editing script is working properly before abandoning the original version.
+
+samples in sequence and progress
+--> sed -e 's/^[[:blank:]]*$/.LP/' horsefeather
+--> sed -e 's/^[[:blank:]]*$/.LP/' -e '/^+[[:blank:]]*__*/d' horsefeather
+--> sed -e 's/^[[:blank:]]*$/.LP/' -e '/^+[[:blank:]]*__*/d' -e 's/^[[:blank:]][[:blank:]]*//' horsefeather
+--> sed -e 's/^[[:blank:]]*$/.LP/' -e '/^+[[:blank:]]*__*/d' -e 's/^[[:blank:]][[:blank:]]*//' -e 's/[[:blank:]][[:blank:]]*/ /g' horsefeather
+You should understand above command means, if not then you are not reading properly from previous lesson
+
+Type of sed application
+- making a series of edit
+- Making series of search and replace
+- Extracting content of a file, this is typically like grep, with the additional advantage that the input can be modified prior to output
+  This type of script is good candidate for shell script
+  grep can not print range of line, but sed capable of doing it
+
+-- > /---/!s/--/\\(em/g
+It may take a moment to penetrate this syntax. 
+What’s different is that we use a pattern address to restrict the lines that are affected by the substitute command, 
+and we use ! to reverse the sense of the pattern match. 
+It says, simply, “If you find a line containing three consecutive hyphens, don’t apply the edit.” 
+On all other lines, the substitute command will be applied.
+
+
