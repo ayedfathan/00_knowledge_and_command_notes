@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Extracting the header of the file
+sed -n -e '/^HEADER FILE/,/^END OF HEADER FILE/p' list_header_body
+
+#extracting the body of the file only
+sed -e '/^HEADER FILE/,/^END OF HEADER FILE/d' -e 's/[[:blank:]]*,[[:blank:]]*/,/g' list_header_body
+
+# Using {} to apply action itu certain address only, nesting action to certain address
+# Removing blank line
+# removing space between coma in the body file`
+sed '/^BODY FILE/,/^END OF BODY FILE/ {
+					/^[[:blank:]]*$/d
+					s/[[:blank:]]*,[[:blank:]]*/,/g
+				      }' list_header_body

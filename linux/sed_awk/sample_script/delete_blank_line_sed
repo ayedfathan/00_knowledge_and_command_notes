@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Displaying horsefeather, without any line modified
+cat horsefeather
+
+# Deleting blank line in horsefeather
+sed '/^[[:blank:]]*$/d' horsefeather
+
+#deleting line from first line until line with +
+sed '1,4d' horsefeather
+# Or using below command
+sed '1,/^+[[:blank:]]*__*/d' horsefeather
+# Or all using pattern address
+sed '/^HORSEFEATHER/,/^+[[:blank:]]*__*/d' horsefeather
