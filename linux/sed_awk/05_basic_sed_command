@@ -1,0 +1,147 @@
+We are going to learn 4 editing command in sed.
+d(delete, a(append), i(insert), and c(change).
+
+the format of sed command is :
+--> [address]command
+A line address is optional with any command. 
+It can be a pattern described as a regular expression surrounded by slashes, a line number, or a line-addressing symbol. 
+Most sed commands can accept two comma-separated addresses that indicate a range of lines. 
+
+A few commands accept only a single line address. They cannot be applied to a range of lines. The convention for them is:
+--> [line-address]command
+
+Remember also that commands can be grouped at the same address by surrounding the list of commands in braces:
+--> address { 
+--> 		command1
+--> 		command2
+--> 		command3
+--> }
+
+The first command can be placed on the same line with the opening brace but the closing brace must appear on its own line. 
+Each command can have its own address and multiple levels of grouping are permitted. 
+Also, as you can see from the indentation of the commands inside the braces, spaces, and tabs at the beginning of lines are permitted.
+
+When sed is unable to understand a command, it prints the message “Command garbled.” 
+One subtle syntax error is adding a space after a command. This is not allowed; the end of a command must be at the end of the line.
+
+Proof of this restriction is offered by an “undocumented” feature: 
+multiple sed commands can be placed on the same line if each one is separated by a semicolon.
+--> n;d
+
+Placing multiple commands on the same line is highly discouraged 
+because sed scripts are difficult enough to read even when each command is written on its own line. 
+(Note that the change, insert, and append commands must be specified over multiple lines and cannot be specified on the same line.)
+
+You can use a comment to document a script by describing its purpose.
+you can place comments anywhere in the script, even on a line following a command. 
+An octothorpe (#) must be the first character on the line. The syntax of a comment line is:
+--> #[n]
+
+Substitution
+============
+We have already demonstrated many uses of the substitute command. Let’s look carefully at its syntax:
+--> 	[address]s/pattern/replacement/flags
+where the flags that modify the substitution are:
+n
+	A number (1 to 512) indicating that a replacement should be made for only the nth occurrence of the pattern.
+g
+	Make changes globally on all occurrences in the pattern space. Normally only the first occurrence is replaced.
+p
+	Print the contents of the pattern space.
+w file
+	Write the contents of the pattern space to file.
+
+Unlike addresses, which require a slash (/) as a delimiter, the regular expression can be delimited by any character except a newline. 
+Thus, if the pattern contained slashes, you could choose another character, such as an exclamation mark, as the delimiter.
+--> s!/usr/mail!/usr2/mail!
+or using dot
+--> s./usr/mail./usr2/mail.
+
+if a script contains multiple substitute commands that match the same line, multiple copies of that line will be printed or written to file.
+The numeric flag can be used in the rare instances where the regular expression repeats itself on a line 
+and the replacement must be made for only one of those occurrences by position. 
+For instance, a line, perhaps containing tbl input, might contain multiple tabs. 
+Let’s say that there are three tabs per line, and you’d like to replace the second tab with “>”. 
+The following substitute command would do it
+--> s/\t/>/2
+
+Delete
+=========
+We previously showed examples of the delete command (d). It takes an address and deletes the contents of the pattern space if the line matches the address.
+The delete command is also a command that can change the flow of control in a script. 
+That is because once it is executed, no further commands are executed on the “empty” pattern space.
+The delete command causes a new line of input to be read and a new pass on the editing script to begin from the top. 
+
+The important thing to remember is: 
+if the line matches the address, the entire line is deleted, not just the portion of the line that is matched. 
+(To delete a portion of a line, use the substitute command and specify an empty replacement.) 
+In the previous chapter, we showed a command to delete blank lines:
+--> /^$/d
+
+Another use of the delete command could be to strip out certain troff requests, 
+such as those that add spacing, break the page, and turn fill mode off and on:
+--> /^\.sp/d
+--> /^\.bp/d
+--> /^\.nf/d
+--> /^\.fi/d
+These commands delete an entire line. For instance, the first command will delete the line “.sp 1” or “.sp .03v”.
+
+The delete command can be used to delete a range of lines. 
+In the previous chapter, there is an example of deleting all tables from a file by deleting the lines between the .TS and .TE macros. 
+There is also a delete command (D) used to delete a portion of a multiline pattern space. 
+This advanced command is presented in the next chapter.
+
+Append, Insert, and Change
+==========================
+The append (a), insert (i), and change (c) commands provide editing functions 
+that are commonly performed with an interactive editor, such as vi. 
+You may find it strange to use these same commands to “enter” text using a noninteractive editor. 
+The syntax of these commands is unusual for sed because they must be specified over multiple lines. 
+The syntax follows:
+
+-->  append	[line-address]a\
+-->i	 	text
+-->  insert	[line-address]i\
+--> 	 	text
+-->  change	[address]c\
+-->  		text
+
+The insert command places the supplied text before the current line in the pattern space. 
+The append command places it after the current line. 
+The change command replaces the contents of the pattern space with the supplied text.
+
+Each of these commands requires a backslash following it to escape the first end-of-line. 
+The text must begin on the next line. To input multiple lines of text, each successive line must end with a backslash, 
+with the exception of the very last line. 
+For example, the following insert command inserts two lines of text at a line matching “<Larry’s Address>”:
+
+--> /<Larry's Address>/i\
+--> 4700 Cross Court\
+--> French Lick, IN
+
+The append and insert commands can be applied only to a single line address, not a range of lines. 
+The change command, however, can address a range of lines. In this case, it replaces all addressed lines with a single copy of the text. 
+In other words, it deletes each line in the range but the supplied text is output only once. 
+For example, the following script, when run on a file containing a mail message:
+--> /^From /,/^$/c\
+--> <Mail Header Removed>
+
+-->  sed '1i # Sampling few users, taken from the /etc/passwd file' my_file | sed '$a # You have reach then end of the file'
+
+
+
+
+Look at the following series:
+.sp 1.5
+.sp
+.sp 1
+.sp 1.5v
+.sp .3v
+.sp 3
+
+If you wanted to change all the arguments to “.5”, 
+it is probably easier to use the change command than try to match all the individual arguments and make the proper substitution.
+/^\.sp/c\
+.sp .5
+
+
