@@ -1,0 +1,129 @@
+An expression, even in computer terminology, is not something to be interpreted literally. 
+It is something that needs to be evaluated. An expression describes a result.
+A regular expression describes a pattern or a particular sequence of characters, 
+although it does not necessarily specify a single exact sequence.
+
+If you use any UNIX text editor on a routine basis, you are probably somewhat familiar with regular expression syntax. 
+grep, sed, and awk all use regular expressions. However, 
+not all of the metacharacters used in regular expression syntax are available for all three programs. 
+The basic set of metacharacters was introduced with the ed line editor, and made available in grep. 
+Sed uses the same set of metacharacters. Later a program named egrep was introduced that offered an extended set of metacharacters. 
+Awk uses essentially the same set of metacharacters as egrep.
+
+To understand regular expression syntax, you have to learn the functions performed by various metacharacters. 
+But you also have to see many examples of them working in various combinations.
+
+for example : ABE
+Each literal character is a regular expression that matches only that single character. 
+This expression describes an “A followed by a B then followed by an E” or simply “the string ABE”. 
+
+A regular expression is not limited to literal characters. 
+There is, for instance, a metacharacter—the dot (.)—that can be used as a “wildcard” to match any single character. 
+You can think of this wildcard as analogous to a blank tile in Scrabble where it means any letter. 
+Thus, we can specify the regular expression “A.E” and it will match “ACE,” “ABE”, and “ALE”. 
+It will match any character in the position following “A”.
+
+The metacharacter *, the asterisk, is used to match zero or more occurrences of the preceding regular expression, 
+which typically is a single character. You may be familiar with * as a shell metacharacter, where it means “zero or more characters.” 
+But that meaning is very different from * in a regular expression. 
+By itself, the asterisk metacharacter does not match anything; it modifies what goes before it. 
+The regular expression .* matches any number of characters, whereas in the shell, * has that meaning. 
+(For instance, in the shell, ls * will list all the files in the current directory.) 
+The regular expression “A.*E” matches any string that matches “A.E” 
+but it will also match any number of characters between “A” and “E”: “AIRPLANE,” “A FINE,” “AFFABLE,” or “A LONG WAY HOME,” 
+for example. Note that “any number of characters” can even be zero!
+
+If you understand the difference between “.” and “*” in regular expressions, 
+you already know about the two basic types of metacharacters: 
+those that can be evaluated to a single character, and those that modify how preceding characters are evaluated.
+It should also be apparent that by use of metacharacters you can expand or limit the possible matches. 
+You have more control over what’s matched and what’s not.
+
+Summary of Metacharacters
+Special Characters		Usage
+.				Matches any single character except newline. In awk, dot can match newline also.
+
+*				Matches any number (including zero) of the single character 
+				(including a character specified by a regular expression) that immediately precedes it.
+
+[...]				Matches any one of the class of characters enclosed between the brackets. 
+				A circumflex (^) as first character inside brackets reverses the match to all characters 
+				except newline and those listed in the class. In awk, newline will also match. 
+				A hyphen (-) is used to indicate a range of characters. 
+				The close bracket (]) as the first character in class is a member of the class. 
+				All other metacharacters lose their meaning when specified as members of a class.`
+
+^				First character of regular expression, matches the beginning of the line. 
+				Matches the beginning of a string in awk, even if the string contains embedded newlines.
+
+$				As last character of regular expression, matches the end of the line. 
+				Matches the end of a string in awk, even if the string contains embedded newlines.
+
+\{n,m\}				Matches a range of occurrences of the single character 
+				(including a character specified by a regular expression) that immediately precedes it. 
+				\{n\} will match exactly n occurrences, \{n,\} will match at least n occurrences, 
+				and \{n,m\} will match any number of occurrences between n and m. 
+				(sed and grep only, may not be in some very old versions.)
+
+\				Escapes the special character that follows.
+
+Extended Metacharacters (egrep and awk)
+Special Characters		Usage
++				Matches one or more occurrences of the preceding regular expression.
+
+?				Matches zero or one occurrences of the preceding regular expression.
+
+|				Specifies that either the preceding or following regular expression can be matched (alternation).
+
+( )				Groups regular expressions.
+
+{n,m}				Matches a range of occurrences of the single character 
+				(including a character specified by a regular expression) that immediately precedes it. 
+				{n} will match exactly n occurrences, {n,} will match at least n occurrences, 
+				and {n,m} will match any number of occurrences between n and m. 
+				(POSIX egrep and POSIX awk, not in traditional egrep or awk.)
+
+This regular expression matches a period followed by three spaces
+--> '\.   '
+
+--> 80.86
+would match lines containing references to “80286,” “80386,” or “80486.”
+To match a decimal point or a period, you must escape the dot with a backslash.
+
+The process of writing a regular expression involves three steps:
+- Knowing what it is you want to match and how it might appear in the text.
+- Writing a pattern to describe what you want to match.
+- Testing the pattern to see what it matches.
+
+--> [Ww]hat
+This regular expression can match “what” or “What.” It will match any line that contains this four-character string, 
+the first character of which is either “W” or “w.” Therefore, it could match “Whatever” or “somewhat.”
+
+If a file contained structured heading macros, such as .H1, .H2, .H3, etc., you could extract any of these lines with the regular expression:
+--> \.H[12345]
+
+Check the command below from sample_sed, running sed expression to horsefeather file
+sed '
+# Replacing all blank line containing no space or any space to .LP
+s/^ *$/.LP/
+# Removing the line that containing printer underscore line, the one that begin with +
+/^+  *__*/d
+# Removing all leading space in front of the line
+s/^  *//
+# Removing multiple spaces within words into single space
+s/  */ /g
+' horsefeather
+
+Print all lines from file /usr/lib/macros/mmt, where the start range is .deBL and the end range is ..
+This is the typical range search that can not be done by grep.
+Btw, sed will print out everything, but when use -n, it only print the one that wanted
+-- > sed -n  "/^\.deBL/,/^\.\.$/p" /usr/lib/macros/mmt
+
+Try this command below
+1. Removing space in start of the line
+2. Removing space at the end of the line
+3. removing space before |
+4. Removing space after |
+--> echo "      said |    azli    |  30-10-78   |    married    " |sed -e 's/^ *//' -e 's/ *$//' -e 's/ *|/|/g' -e 's/| */|/g'
+
+

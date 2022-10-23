@@ -1,0 +1,11 @@
+# Print out the list.out file that have people group by state
+cat list.out|
+# Remove the trailing space and the - . exist as the starting character for each people
+sed 's/^[[:blank:]]*-[[:blank:]]*//' |
+# Use awk to move the state back together with the person line as the last field	
+awk -F, '
+	 $2 == "" {state = $1} 
+	 $2 != "" {print $0 ", " state}
+	' |
+# Sort the output based on name
+sort 

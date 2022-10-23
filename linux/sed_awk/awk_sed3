@@ -1,0 +1,35 @@
+#!/bin/bash
+
+sed '
+# Removing space in the start of the line if exists
+s/^ *//
+# Removing the space at the end of theline if exists
+s/ *$//
+# Change double or multiple space between words to single space
+s/  */ /g
+# Removing space before comma as field separator
+#s/  *,/,/g
+# Removing space after comma as field separator
+s/,  */,/g
+# Change the state abbreviation to its full name
+s/ MA/,Massachusetts/
+s/ VA/,Virginia/
+s/ OK/,Oklahoma/
+s/ PA/,Pensylvania/
+s/ CA/,California/
+' list |
+
+# Sort the result from sed, the key is field 4 and 1 (the state name and then by name), and the separator is comma (,)
+sort -t, -k4,1 |
+
+# Print out the result using awk, group by state name
+awk -F, '
+$4 == LastState {
+		  print "\t" $1 "," $2 "," $3
+		 }
+$4 != LastState {
+		  LastState = $4
+		  print "\n" $4
+		  print "\t" $1 "," $2 "," $3
+		 }
+'

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+sed '
+# Replacing all blank line containing no space or any space to .LP
+s/^ *$/.LP/
+# Removing the line that containing printer underscore line, the one that begin with +
+/^+  *__*/d
+# Removing all leading space in front of the line
+s/^  *//
+# Removing multiple spaces within words into single space
+s/  */ /g
+' horsefeather
