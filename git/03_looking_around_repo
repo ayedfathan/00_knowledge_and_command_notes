@@ -1,0 +1,81 @@
+To have an idea of the history of commits done for your repository.
+You can run the command below
+--> git log
+will list down all the commit of the current branch, with the latest comit at the top,
+followed by its parent and so on.
+
+The git log command uses a pager, in case you have more commits to show than there is space for. 
+Recall you can use the up and down arrow keys to navigate it; when you are done, 
+simply hit the q (stands for “quit”) key, which returns you back to the command prompt.
+
+To see the log more simple you can do
+--> git log --pretty=oneline
+--> git log --pretty=oneline --abbrev-commit
+--> git log --oneline
+
+Every commit (excluding the very first commit in your repository) has a pointer to its parents 
+(or, if it’s a merge commit, to both of its parents). So, what happens when you run git log? 
+Well, Git looks at the last commit you made and displays details about that commit per the flags you supplied. 
+It then follows the pointer to the parent commit and repeats. 
+Lather, rinse, repeat till it reaches a commit that has no parents.
+
+But Git also knows how many branches you have in your repository! 
+This implies that Git should be able to find the latest commit on every branch and 
+trace the lineage of that commit simply by following the parent pointer.
+
+Beside showing log for one branch, you can show commit log for all branch and with graph
+--> git log --oneline --all --graph
+
+The commit history of our repository reflects how the repository has evolved over time. 
+As we progress with our work, we will be continuously making commits. 
+These commits, in sequence, will represent the commit history of the branch we are working on. 
+Maybe we will have multiple such branches in flight. Over time, 
+we will create many such branches and then merge them into the integration branch. 
+For projects that stick around for a while, it’s easy to forget what happened when. 
+This is where the git log command is handy, think of it as automatic note-taking for our project.
+
+Also, we can easily answer questions like “Has my branch diverged away from the integration branch?” 
+or “Will this be a fast-forward merge?” by looking at the commit history of our branch and the branch we intend to merge into.
+
+The role of a Git repository—any Git repository—is to track the content of your files. 
+You may create new files or edit or move or delete existing files as you progress with your work, 
+maybe committing along the way. So what constitutes a difference?
+
+Well, if Git knows what a file (or a set of files) looks like, 
+and you make a change to it, now Git can help you figure out what changed. 
+And remember—Git only knows what a file looks like if it’s tracking the file, in that, 
+at some point, you either added a particular file to Git’s index, or committed it.
+
+To check the different between file in working directory and in git index.
+After you modified the file, when you run git status. git will ask you to add the file back to index.
+In case you want to know what is the difference between file in working directory and the file inside the index
+--> git diff <file name>
+
+to check any different between file in index and with our database object
+in case you want to check and make sure what you are going to commit
+--> git diff --cached
+some document use
+--> git diff --staged
+both of the option is similar and showing similar output
+
+You can also use git diff to compare between 2 branches.
+In case you want to check what will happen when you are going to merge source branch to the target branch
+-->git diff <target branch> <source branch>
+
+You can also compare between two commit
+--> git diff <commit id 1> <commit id 2>
+This is important if you want to cherry pick, git cherry-pick allows you to move commit from one branch into another branch
+
+Brigitte wants to compare the commit with ID 846c398 with the commit that came just before it (38a7176). 
+It’s important she get the order of the commits right—if the intent is to find what changed since the last commit, 
+then the latest commit should be the “source,” like so:
+--> git diff 38a7176 846c398
+Target yang lama, source yang baru
+
+Think about it—changes in the target (the left-hand side of the Venn diagram) 
+always show up as minuses (-) and changes in the source (right-hand side) show up as pluses (+). 
+In order to see what was “added” in the latest commit, you would want to put that commit ID second, 
+since its diffs will show up with the plus prefix.
+
+
+
