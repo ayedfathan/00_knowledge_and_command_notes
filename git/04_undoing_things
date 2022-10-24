@@ -1,0 +1,87 @@
+If you modified the file in your working diretory, and you want to revert to before edit.
+You can use git restore command. You can see this command mentioned by git when you run git status.
+git restore is the opposite of git add.
+so changes of the file in working directory will be discarded with git restore.
+--> git restore <file name>
+It takes the copy of the file in git index and move it to working directory
+Check the diff first with git diff file name, o compare you file in working directory and index.
+so you can be sure all the changes that had happened.
+
+What if the file is already add to the index.
+Cool, you can see the command also from git status.
+--> git restore --staged <file_name>
+But this time it will restore the copy from object database to the index.
+
+git restore with out flag --> will restore the file in working directory using copy from index
+git restore with flag --staged --> will restore the file in index using copy from object database
+git restore is the opposite of git add
+and git restore --stage is the opposite of git commit
+
+before and after you run git restore, try always to check with git status and git diff
+ 
+Removing file from your git index and working directory.
+--> git rm <file name>
+when you run git status after that. You will be informed that the file has been deleted.
+and if you are sure, then you can run git commit
+if not sure, then you can run git restore command.
+
+git rm will remove the file from working directory and index. so you just need to commit.
+if you used os rm command, then you need to continue with git add and then git commit.
+
+When you tell Git to remove a file, it only has to delete the file. 
+However, in order to delete a directory, Git has to remove all the files (or subdirectories) included within the directory you specify. 
+In that case, the git rm command has to be supplied the -r (for recursive) flag, 
+which gives Git permission to recursively delete all the files in the directory you specify.
+
+Git affords you another command—the git mv command. 
+The git mv command has all of the same characteristics as the git rm command—the git mv command only works with tracked files, 
+and like the git rm command, the git mv command renames or moves the files you tell it to in both the working directory and the index. 
+--> git mv <file name>
+
+Git allows for editing commit messages using the git commit command, with a special flag called --amend.
+The first thing to check is that you are on the same branch as the commit you wish to edit. 
+The next thing, and this is super important, is that you want to have a clean working directory. 
+You can verify both of these with our good friend the git status command.
+Next, you can amend the last commit on the branch:
+--> git commit --amend -m "new commit message"
+
+When amending commits, you should have a clean working directory. 
+Specifically, you want no uncommitted changes in the index, or else the changes you’ve staged will be part of the amended commit! 
+That is, you might accidentally add more changes to the commit than you intended to. 
+Make it a practice to always check the git status prior to amending commits.
+
+But what if you have have already staged changes? 
+The easiest thing to do here is to use the git restore command with the --staged flag for every file you have in the index, 
+so that Git puts them back in the working directory. Only then should you amend the latest commit.
+
+You can also rename your branch, how to do it, depend on your current active branch.
+If you are inside the branch that you are going to rename, then run below
+--> git branch -m <new name>
+If you are outside of the branch you are going to rename, then run below
+--> git branch -m <curr name> <new name>
+
+The second option works regardless of what branch you are currently on—the command works 
+even if the branch you are attempting to rename is the current branch. This is why we always prefer using the second option.
+
+to can cel your commit, or moving the head to another commit, we can use the git reset command
+--> git reset --flag <commit id>
+for flag :
+--> -- soft , will move the head to the commit id we wanted, and copy the changes from object databasse to index and working directory.
+so if you want to cancel, just run git commit
+
+The git reset command’s default mode is --mixed, so you can invoke git reset or git reset --mixed with the same results
+--> git reset A     OR     git reset --mixed A
+The --mixed mode does a bit more work than the --soft mode does. It has two steps:
+- First, it moves the changes in commit B (the commit you are undoing) into the index, 
+and then copies those changes from the index into the working directory, just like --soft mode does.
+- It then copies the contents of commit A into the index. That is, the index now looks exactly like the commit you just reset to.
+
+Finally, the --hard mode takes what the --mixed mode does to its logical end. In mixed mode, 
+the second step copies the contents commited in “A” into the index, and stops there. --hard mode does not. 
+It takes the contents of the index (which have the changes as they are in commit A) and overwrites the working directory. 
+This means that the object database, the index, and the working directory all look the same. 
+It’s as if commit B never happened! After a hard reset, the working directory, the index, and HEAD all look like commit “A.”
+
+Another saves method is to use git revert, by passing in the commit id that you want to revert.
+Best to use it, after git diff, so you know exactly what will be reverted.
+
