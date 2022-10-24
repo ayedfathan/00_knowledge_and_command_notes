@@ -144,4 +144,46 @@ it is probably easier to use the change command than try to match all the indivi
 /^\.sp/c\
 .sp .5
 
+List 
+======
+The list command (l) displays the contents of the pattern space, showing non-printing characters as two-digit ASCII codes. 
+It is similar in function to the list (:l) command in vi. You can use this command to detect “invisible” characters in the input
 
+--> sed -n -e "l" test/spchar
+
+Transform
+===========
+The transform command is peculiar, not only because it is the least mnemonic of all sed commands. 
+This command transforms each character by position in string abc to its equivalent in string xyz
+--> [address]y/abc/xyz/
+The replacement is made by character position. Therefore, it has no idea of a “word.” 
+Thus, “a” is replaced by “x” anywhere on the line, regardless of whether or not it is followed by a “b”. 
+One possible use of this command is to replace lowercase letters with their uppercase counterparts.
+--> y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/
+
+Print
+========
+The print command (p) causes the contents of the pattern space to be output. 
+It does not clear the pattern space nor does it change the flow of control in the script. 
+However, it is frequently used before commands (d, N, b) that do change flow control. 
+Unless the default output is suppressed (-n), the print command will cause duplicate copies of a line to be output. 
+It can be used when default output is suppressed or when the flow control through the program avoids reaching the bottom of the script.
+
+a script that shows how the print command might be used for debugging purposes. 
+It is used to show what the line looked like before you made any changes.
+--> #n Print line before and after changes.
+--> /^\.Ah/{
+--> p
+--> s/"//g
+--> s/^\.Ah //p
+--> }
+
+Quit
+=======
+The quit command (q) causes sed to stop reading new input lines (and stop sending them to the output). Its syntax is:
+--> [line-address]q
+
+It can take only a single-line address. Once the line matching address is reached, the script will be terminated.
+For instance, the following one-liner uses the quit command to print the first 100 lines from a file
+--> sed '100q' test
+It prints each line until it gets to line 100 and quits. In this regard, this command functions similarly to the UNIX head command.
