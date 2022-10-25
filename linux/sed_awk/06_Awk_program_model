@@ -1,0 +1,137 @@
+Print out the content of the file using awk, line by line -->
+--> awk '{print}' sedexpr
+
+When you invoke the awk program, it reads the script that you supply, 
+checking the syntax of your instructions. Then awk attempts to execute the instructions for each line of input. 
+Thus, the print statement will not be executed unless there is input from the file.
+
+It’s important to understand the basic model that awk offers the programmer. 
+Part of the reason why awk is easier to learn than many programming languages is 
+that it offers such a well-defined and useful model to the programmer.
+
+An awk program consists of what we will call a main input loop. 
+A loop is a routine that is executed over and over again until some condition exists that terminates it. 
+You don’t write this loop, it is given—it exists as the framework within which the code that you do write will be executed. 
+The main input loop in awk is a routine that reads one line of input from a file and makes it available for processing. 
+The actions you write to do the processing assume that there is a line of input available. 
+In another programming language, you would have to create the main input loop as part of your program. 
+It would have to open the input file and read one line at a time. This is not necessarily a lot of work, 
+but it illustrates a basic awk shortcut that makes it easier for you to write your program.
+
+When awk reads an input line, it attempts to match each pattern-matching rule in a script. 
+Only the lines matching the particular pattern are the object of an action. 
+If no action is specified, the line that matches the pattern is printed (executing the print statement is the default action). 
+Consider the following script:
+--> /^$/ { print "This is a blank line." }
+
+sample of awk reading file and when found blank line, will print it out and also print out the counter
+awk '/^[[:blank:]]*$/{counter = counter + 1; print counter" - Found blank line";}' list_header_body
+
+or using script file for more easy reading
+Create file with name awk_script, containing
+/^[[:blank:]]*$/ {
+		  counter = counter + 1
+		  print counter" - Found blank line"
+		 }
+
+then run it like below
+--> awk -f awk_script list_header_body
+
+Awk makes the assumption that its input is structured and not just an endless string of characters. 
+In the simplest case, it takes each input line as a record and each word, separated by spaces or tabs, as a field. 
+(The characters separating the fields are often referred to as delimiters.) 
+The following record in the file names has three fields, separated by either a space or a tab.
+--> John Robinson	666-555-1111
+
+Awk allows you to refer to fields in actions using the field operator $. 
+This operator is followed by a number or a variable that identifies the position of a field by number. 
+“$1” refers to the first field, “$2” to the second field, and so on. “$0” refers to the entire input record. 
+The following example displays the last name first and the first name second, followed by the phone number.
+--> awk '{ print $2, $1, $3 }' names
+
+You can change the field separator with the -F option on the command line. 
+It is followed by the delimiter character (either immediately, or separated by whitespace). 
+In the following example, the field separator is changed to a tab.
+--> awk -F"\t" '{ print $2 }' names
+--> awk -F, -f awk_script3 names2 --> you can check in sampe directory
+
+The field separator can be assing in the script file also. check for awk_script4.
+So you can run it like below 
+--> awk -f awk_script4 names2
+
+This script is designed to print all lines of input, 
+but we could modify the single action by writing a pattern-matching rule that selected only certain names or addresses. 
+So, if we had a large listing of names, we could select only the names of people residing in a particular state. We could write:
+--> /MA/ { print $1 ", " $6 }
+
+where MA would match the postal state abbreviation for Massachusetts. 
+However, we could possibly match a company name or some other field in which the letters “MA” appeared. 
+We can test a specific field for a match. The tilde (~) operator allows you to test a regular expression against a field.
+--> $5 ~ /MA/   { print $1 ", " $6 }
+You can reverse the meaning of the rule by using bang-tilde (!~).
+--> $5 !~ /MA/   { print $1 ", " $6 }
+
+Finally, if you specify more than a single character as the field separator, it will be interpreted as a regular expression. 
+That is, the field separator will be the “leftmost longest non-null and nonoverlapping” substring[3] that matches the regular expression. 
+(The phrase “null string” is technical jargon for what we’ve been calling the “empty string.”) 
+You can see the difference between specifying:
+--> FS = "\t"
+which causes each tab to be interpreted as a field separator, and:
+--> FS = "\t+"
+which specifies that one or more consecutive tabs separate a field.
+Using a regular expression allows you to specify several characters to be used as delimiters:
+--> FS = "[':\t]"
+Any of the three characters in brackets will be interpreted as the field separator.
+
+You can have variables also in awk command, such as below
+i--> # Count blank lines.
+-->  /^$/ { 
+-->    	   print x += 1 
+-->       }
+
+or
+
+-->  /^$/ { 
+-->  	   print x++
+-->       }
+
+-->  # Count blank lines.
+-->  /^$/ { 
+-->  	    ++x
+-->       }
+-->  END {
+-->  	   print x
+-->      }
+
+--> awk '/^[[:blank:]]*$/ { x++} END {print x}' list_header_body
+
+check below sample also about using variable in awk
+--> awk -f grades.awk grades
+
+awk also has builtin variables such as FS for field separator, NR to reference the line number and so on
+awk also recogize below operator
+Operator	Description
+<		Less than
+>		Greater than
+<=		Less than or equal to
+>=		Greater than or equal to
+==		Equal to
+!=		Not equal to
+~		Matches
+!~		Does not match
+
+Operator	Description
+||		Logical OR
+&&		Logical AND
+!		Logical NOT
+
+--> NF == 6 && NR > 1
+--> NR > 1 && NF >= 2 || $1 ~ /\t/
+
+Formatted print in awk
+awk 'BEGIN { printf ("Hello, world\n") }'
+--> printf ( format-expression [, arguments] )
+
+--> printf("%d\t%s\n", $5, $9)
+--> printf("|%10s|\n", "hello")
+

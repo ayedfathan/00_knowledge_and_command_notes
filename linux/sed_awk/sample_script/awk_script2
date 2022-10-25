@@ -1,0 +1,5 @@
+# test for integer, string or empty line.
+/[0-9]+/    { print NR " - That is an integer" }
+/[A-Za-z]+/ { print NR " - This is a string" }
+/^$/        { print NR " - This is a blank line." }
+

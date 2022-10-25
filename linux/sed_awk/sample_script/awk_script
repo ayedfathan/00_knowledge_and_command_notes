@@ -1,0 +1,5 @@
+/^[[:blank:]]*$/ {
+                  counter = counter + 1
+                  print counter" - Found blank line"
+                 }
+
