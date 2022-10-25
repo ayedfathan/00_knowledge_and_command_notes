@@ -1,0 +1,15 @@
+#! /bin/bash
+sed '
+/^HEADER FILE/,/^END OF HEADER/d
+/^[[:blank:]]*$/d
+/^BODY FILE/,/^END OF BODY FILE/{
+	/^BODY FILE/d
+	/^END OF BODY FILE/d
+	s/[[:blank:]]*,[[:blank:]]*/,/g
+	s/ MA/,Masscahusetts/
+	s/ CA/,California/
+	s/ OK/,Oklahoma/
+	s/ PA/,Pensylvania/
+	s/ VA/,Virginia/
+	}
+' list_header_body
