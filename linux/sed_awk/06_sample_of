@@ -1,0 +1,52 @@
+There are more to awk, it has a lot of programming component.
+Unfortunately we are not going to go there, but incase you have interest on that,
+you can read and search for it from the internet. Refer to any book discussing awk in details.
+
+awk has internal variable.
+NR = the line number
+NF = number of field
+FS = field separator
+RS = record separator
+Has BEGIN, END block, that you can manipulate before the input processing, and after the input processed,
+before the script done.
+
+--> awk '{ print $3 }' teams.txt
+print the third field from teams.txt, field separated by space
+
+-->awk '/0.5/ { print $1 }' teams.txt
+print the first field separated by space, for any line in file teams.txt, that containing 0.5
+
+--> awk '/^[0-9][0-9]/ { print $1 }' teams.txt
+print the first field, separated by space from team.txt that has line start with 2 digit
+
+--> awk '$2 ~ /ia/ { print $1 }' teams.txt
+print the first field where the second field containing string ia
+
+--> awk '$2 !~ /ia/ { print $1 }' teams.txt
+print the 1st field where the 2nd field doest has string ia
+
+--> awk '$3 > 50 { print $1 }' teams.txt
+print the first field, where the 3rd field greater than 50
+
+--> awk '/Raptors/,/Celtics/ { print $1 }' teams.txt
+print the 1st field for all line between Raptors and Celtics, including both of them
+
+--> awk '$4 == 31, $4 == 33 { print $0 }' teams.txt
+print the whole record for line between S4 equal to 31 and 33, including both of them
+
+--> awk 'BEGIN { print "Start Processing." }; { print $3 }; END { print "End Processing." }' teams.txt
+print the 3rd record for each line but before print start processing, and before exit print end processing
+
+--> awk '$3 > 50 && $4 < 30 { print $1 }' teams.txt
+print the 1st field for all record where the 3rd fiels greater than 50 and the 4th field less than 30
+
+--> awk 'END { print "File", FILENAME, "contains", NR, "lines." }' teams.txt
+no processing of the line, just before exit print the file name and the number of line
+
+--> awk 'BEGIN { FS = "." } { print $1 }' teams.txt
+change the field separator to . and print 1st field
+you can use this also, similar --> awk -F . '{print $1}' teams.txt
+
+--> awk 'BEGIN { FS = ".." } { print $1 }' teams.txt
+setting the field separator to .. (can be more than 1 char, and also can be regex) and then print record 1 from each line
+
