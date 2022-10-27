@@ -1,0 +1,105 @@
+Besides hosting your git locally in your machine.
+You can have git repostiry also from another machine or host.
+such as, someone working in open source project, and he want you to collaborate in the repo.
+He can can create the repo, and then share the repo to you.
+
+You’ll use another Git command: clone. As the name suggests, 
+the git clone command allows you to create a copy (a “clone”) of an existing repository. 
+The clone command expects to get a special URL as its argument
+
+--> git clone <url>
+
+There are some company providing repository manager, such as gitlab, github and bitbucket.
+So you can create the repo in github and then clone. or you can fork some else repository and then clone it to you local machine.
+fork is not part of git command, but it is a feature provided by github.
+as for git clone, it is part of git command.
+
+When you clone such a repository, Git does a few things:
+
+1. Git first creates a folder in the directory where you ran the git clone command; 
+the folder will have the same name as the repository you are cloning (unless you specify a different name). 
+Inside that, it creates a .git folder.
+
+2. It then copies the entire commit graph, including all commits, branches, and a few other things, 
+from the repository you are cloning into the .git folder it just created.
+
+3. Finally, it uses the git switch branch to check out the same branch that was checked out in the original (the one you are cloning from).
+
+The remote repository and the local copy are completely independent of one another (although the local copy knows where it was cloned from). 
+You can make any number of changes to your local copy, and the remote would be completely unaware of those changes.
+
+When you clone a repository, the remote repository does not know you cloned it. 
+However, your local copy knows about the remote repository that it “originated” from. 
+This is how clones differ from the other repositories you’ve created so far
+
+Git belongs to a family of version control systems that are referred to as “distributed.” 
+In a distributed system, everyone who clones a repository gets a full copy of the repository. 
+Every commit, every branch—we mean everything. 
+
+There is another huge benefit to this model: your local copy is completely disconnected from the remote. 
+You can perform pretty much any operation—branch, commit, merge, view the commit history using the git log command, 
+and see differences using the git diff command—all of it locally, without the remote knowing about it.
+
+git push command allows you to synchronize your local changes with the remote.
+
+It’s easier to think of a remote repository as just another copy of your commit history, 
+with the caveat that any changes you make to your local copy eventually need to be synchronized with the remote. 
+The push command allows you to do just that.
+
+once you push it, then you can check whether your local repo is sync with the repo in github.
+
+You now know you can push your changes to the remote. But how does Git know where to push? 
+We mentioned earlier that when you clone a repository, the clone knows the location of the remote repository. 
+If you’re ever curious about the remote repository’s location, you can ask Git with the remote command
+--> git remote
+--> git remote -v
+
+When you invoke the git push command, Git is actually performing git push origin. 
+This, in turn, pushes your changes to the URL listed in the “push” entry when you run the git remote command.
+--> git push equal to git push origin
+
+Any commit that not recognize by remote is still save for you to run command that changing commit id such as
+git rest and git commit --amend. But once it push to the remote. be carefull on running those command.
+
+Just remember, sharing is caring. Once you share your commit with the outside world, treat it with care.
+
+Similarly, for a cloned repository, you (and perhaps your team) decide which branch will play the role of integration branch, where everyone’s work comes together.
+This means that anytime you want to do some work, you should create a branch from the integration branch.
+and then you push to remote and run git pull request. Which also usually you will ask your college to review your changes.
+once the pull request merge to the remote master branch, than as always delete the temporary branch in github, also in your local.
+
+before pushing or committing to remote/origin, better run git fetch
+--> git fetch -p
+what happen is, it will download all the commit information for all branch, without impacting your local copy.
+besides that -p will also delete the origin branch exist in you local if already deleted in remote.
+
+based on the information from git fetch you can do git merge, or delete your local branch which already not in remote.
+or switch to another remote branch and do some work with it to collaborate.
+
+actually git pull is git fetch + git merge, but without knowing what will happen.
+if you do git fetch first, you can check with git log. and findout what will happen if you run git merge or git pull
+
+Git is distributed. The remote is unaware of any changes you make to your clone, like creating a branch or making commits. 
+Turns out that’s a double-edged sword! If a collaborator pushes a commit to a branch (say, an integration branch like master), 
+your clone isn’t informed in any way. That is why important to run git fetch and git log to analyze your commit position with remote.
+
+How does one “catch up” with changes that appear in the remote? The answer is another Git command: pull. 
+The role of the git pull command is to check if any new commits have appeared on the remote repository for a particular branch, 
+and if so, retrieve those commits and update your local branch with the new commits.
+
+branch command has a flag called verbose (longhand for -v) that displays detailed information about your branches. 
+The git branch command also supports the double-v (-vv) flag, which stands for very verbose. 
+Using this option reveals even more information about your branches, which includes the name of the remote tracking branch associated with a branch (if it has one). 
+The next time you push (or pull), Git knows that the local master branch’s counterpart in the remote (named origin) is a branch called master (hence origin/master). 
+This means that the next time you push, Git will update the remote’s master branch with any new commits you added on your local master branch.
+--> git branch -vv
+--> git branch -a
+--> git branch -avv
+
+Let say your friends wants you to help in their branch. and the branch already push to remote.
+What you can do is, run git fetch -p and then git switch to that branch.
+when you switch to that branch, git automatically pull all the data for that branch from remote and create local copy.
+
+REMEMBER, once you finished pull request and delete the remote branch, run git fetch -p and for all local branch that has no remote branch,
+you can delete it with git branch -d or git branch -D
+
