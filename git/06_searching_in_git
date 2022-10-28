@@ -1,0 +1,154 @@
+Git is absolutely brilliant at tracking changes: it can tell you exactly when a line was changed, who changed it, 
+and the ID of the commit that introduced that change. To see this, use the git blame command
+--> git blame <file name>
+
+git blame cannot tell you whether a line was added or how it changed—it only gives details about the last revision to that line. 
+Furthermore, since git blame only looks at the lines in the file at the time you run it, it cannot tell you about deleted lines.
+For finding out the changes, whether it is added or modified, you can use the git diff for that commit id and commit id before it.
+Or you can use git log command later on below.
+
+The git blame command is so useful that most Git repository manager web interfaces give you an easy way to look at its output. 
+If you navigate to the repository on GitHub and look at the contents of any file, you will blame button at the right.
+And inside the blame page, if you click certain line, it will show you the git diff actually.
+
+and when you want to go details to specific line, you can run
+--> git blame <commit id> <file name>
+
+With git blame, you can see the last commit per line in that particular file for the specific commit id.
+in default if commit id not given will be using HEAD as reference.
+
+Searching Git repositories with grep
+Every so often you might have to search your Git repository for a particular word or phrase. 
+You probably know that most editors can perform a global search across all the files in a project. 
+But guess what? Git can help here too! The command you are looking for is git grep, and you can supply it any string, like so:
+--> git grep "phrase or string"
+
+It shouldn’t surprise you that the grep command also supports plenty of flags
+-i for incase sensitive
+-n for displaying line number
+-l only listing the file name
+
+searching for phrase validate_input in the repository, which files has it
+--> git -in "validate_input"
+
+git grep searching only inside the repository, only for the file known by the repo.
+for any file that still not being added to the repo, we can use grep command from os
+Git’s grep, by default, does not search your files. Rather, it searches its index and database, so it can make good use of Git’s efficient internal storage.
+This means that Git’s grep can be a lot faster than Bash grep. On the other hand, 
+if you wish to search all files in a project, including tracked and untracked files, Bash’s grep is your friend.
+However, it’s not an either/or—depending on the use case, we’ve found that we reach for one or the other.
+
+Where git blame falls short
+The git blame command is pretty rad. It gives lots of information about a certain file, 
+and you can easily see who changed any line of the file, including details about the commit that affected that line.
+
+However, Git blame works at a line level! Git blame can tell you when a particular line was last changed, 
+but it can’t tell you what changed in that line when that commit was made. And finally, git blame only looks at one file at a time.
+
+If you ever wanted to know when a particular piece of text was added or removed, you need look no further than our good friend and ally, the git log command. 
+It offers several options to search the “diff” that each commit introduces—that is, git log can help you search the changes introduced by each commit.
+
+If you are interested in when the word “tired” first appeared or disappeared, you can use the git log command with the -S (uppercase “S”) flag. 
+This lets you search the diffs of each commit like so
+--> git log -S tired
+
+git log -S versus blame
+There are a couple of differences between the git log’s search results and those of git blame. 
+First, the pickaxe option (-S) is not restricted to a single file. In our example, 
+using the pickaxe option to search for “tired” searches your entire repository—it’s not limited to a single file. 
+You can restrict git log to only display the log for a single file by supplying the filename at the end.
+--> git log -S "phrase" <file name>
+
+as you know, you can use several flag for git log
+-p for patching
+--oneline showing commit in one line
+--graph shown in graph
+--word-diff
+
+--> git log -S tired -p --oneline --graph
+--> git log -S tired -p
+
+Besides -S you can use -G, it will give more output.
+Searching for text in a Git repository using the -S flag only reveals commits that added or removed that piece of text. 
+To find all commits where the line that contains a piece of text changed, there is the -G flag that git log supports.
+
+git log command can also be used to search phrase in commit message with grep flag. can also be combine with other flag know by git log
+--> git log --grep "frase"
+
+Checking out commits
+--> git checkout <commit id>
+You were travell back in time to that commit situation. you index, working directory and your object database switch to that commit id.
+HEAD also switch to that commit id, BE CAREFULL: DON'T DO COMMIT WHILE CHECKOUT. if you need create branch and then you can delete later on.
+If you want to comeout from checkout HEAD, switch your branch back to master or any other known branch
+
+The lesson here? If you ever want to see what your repository looked like at a particular point in time, 
+use Git’s checkout facilities to do just that. However, be sure to create a branch first and switch to it 
+before making any edits when you are in detached HEAD state! Remember, branches are cheap. 
+If you decide later on that you don’t care to keep those changes around, simply delete the branch. 
+This way, your work resides safely on a branch, and you can always switch back to it if you like, 
+without running the risk of losing your changes. Win-win!
+
+Searching for commits using git bisect
+--> git bisect start
+--> git bisect good <commit id>
+--> git bisect bad <commit id>
+
+between searching use one of below until you found what you want
+--> git bisect bad
+--> git bisect good
+
+to finished it
+--> git bisect reset
+
+SUMMARY POINTS
+=======================
+
+Git provides a variety of useful tools to search the contents of repositories, the commit log, and commits.
+
+You can annotate any tracked file in a Git repository using git blame. 
+This will show you, on a per-line basis, details about the latest commit that changed that line, 
+including the commit ID, the author info, and the date the change was made.
+
+Most Git repository managers like GitHub make it easy to annotate files using git blame in your browser.
+
+You can supply git blame a specific commit ID to see the revision history of a file at the time that commit was made.
+
+You can search the contents of all tracked files in your repository using the git grep command.
+
+The git grep command by default is case-sensitive when searching. You can use the -i (shorthand for --ignore-case) flag to make your search case-insensitive.
+
+The git grep command also supports the -n (shorthand for --line-number) flag that will display the line number for a match.
+
+The git grep command lists every match it finds. You can restrict the output to list just the names of the files using the -l (shorthand for --name-only) flag.
+
+To find which commit added or removed a piece of text, you can use the -S flag that the git log command supports. 
+The -S flag is one of two “pickaxe” options that Git supports, and it accepts as its argument the text you want to search for.
+
+The pickaxe options search the entire commit history but can be limited to inspect the history of a single file by supplying the name of the file to the git log command.
+
+The git log command can also display the patch introduced in every commit using the -p (shorthand for --patch) flag. 
+This can be combined with the -S flag to see if the search text was added or removed in a particular commit.
+
+Searching for text in a Git repository using the -S flag only reveals commits that added or removed that piece of text. 
+To find all commits where the line that contains a piece of text changed, there is the -G flag that git log supports.
+
+The --grep flag with the git log command searches commit messages.
+
+You can “flip back” to any commit in your commit history using the git checkout command.
+
+When you check out a commit, Git will rewrite your working directory to look like it did when you made that commit.
+
+Checking out a commit puts you in “detached HEAD” state. This means that you are no longer working on a branch.
+
+You can continue to make edits and commits, but switching away from that commit history means you will abandon your commits (since they are not referenced by a branch).
+
+It’s best not to make any commits when you are in detached HEAD state. Always work on branches.
+
+You can search for commits that introduced a typo or a bug using the git bisect command, 
+which uses the binary search algorithm to navigate your commit history, and quickly zero in on the commit you are looking for.
+
+At each step in a git bisect session, Git checks out a commit, leaving you in detached HEAD state. 
+Since Git will rewrite your working directory, you can look around to see if you spot the unwelcome behavior.
+
+Depending on whether you see the issue, you can tell Git if the current commit is “good” or “bad,” 
+which informs Git which direction in the commit history to search. This repeats till you’ve isolated the commit with the reported issue.
