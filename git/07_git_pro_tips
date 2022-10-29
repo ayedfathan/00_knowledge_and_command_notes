@@ -1,0 +1,174 @@
+git config has 2 parameters global and local, default will be local.
+--> git config --global ........
+--> git config ........
+
+What happens when you invoke the git config command with the --global flag? 
+Git realizes you want a particular setting available across all of the repositories you work with, 
+so it installs that setting in a file called .gitconfig in your home directory. For Linux and macOS users, 
+your home directory will be ~/ and for Windows users, this defaults to the directory with your username under C:\Users. 
+You can open it with your preferred text editor.
+
+say you want to set username and useremail in global config
+--> git config --global user.name "your name"
+--> git config --global user.email "your email address"
+
+if you run only --> git config --global user.name --> without supplying value,
+git will show the current value from global config
+
+Git is all about flexibility. It knows that different situations have different requirements, 
+and it aims to do everything it can to help you out. 
+Let’s say that most of your Git use involves projects at work—it makes sense for you to set your work email address in the global configuration. 
+This way, no matter which repository you work on, 
+the email address recorded in every commit across all repositories on that workstation would be your work email address.
+
+But then you decide to work on a personal project or contribute to an open source project in your free time. 
+Just for that project, you would rather record your personal email address for every commit. 
+Git allows you to install a specific configuration for a particular repository, overriding the global one. 
+
+For using --global flag, you can be in any directory. However setting up git config with --local flag.
+You have to be inside the folder of the repository.
+Git stores the local configuration in a file called “config” inside the hidden .git folder.
+
+What happens when you install a option locally? Git stores it in, you guessed it, 
+a special location inside the hidden .git directory of the repository you are in. 
+As long as you are working in that repository, Git will use the option as dictated by the local configuration. 
+If you change directories and start working with another repository that does not have a local configuration, 
+Git falls back to using the global setting.
+
+The git config command offers an --unset flag that will remove an entry. 
+Suppose you want to remove the value for user.email from the configuration of a specific repository—that is, 
+you want to remove a “local” configuration. This is how you’d go about doing it:
+--> git config --local --unset user.email
+
+If this was a global configuration, you’d have to pass the --global flag alongside the --unset flag to affect the .gitconfig in your home directory.
+
+The git config command offers a --list flag that lists all the options you’ve set, global or local.
+--> git config --list
+
+if you to see clearly, whether it is coming from global or local, you can run below
+--> git config --list --show-origin
+
+At times, you’ll want to tell Git to ignore certain files in a repository. 
+Case in point—when you navigate to a directory using the Finder, macOS tends to create a file called .DS_Store that it uses to store internal settings. 
+Windows users, on occasion, might have noticed the pesky Thumbs.db or Desktop.ini files.
+
+Many editors tend to create specific files and/or folders to store their own project-specific settings. 
+Visual Studio Code, based on how you use it, often creates a .vscode folder. IntelliJ (from JetBrains) creates an .idea folder.
+
+Often, software projects have files that you will never track in your Git repository. 
+For example, most JavaScript projects tend to have a node_modules folder that houses dependencies. 
+Java projects often have a build directory that stores all the compiled source code. 
+Since both the node_modules folder and the build directory contain “generated” artifacts, 
+you can always recreate them using the appropriate tooling. There’s no reason to stuff them into your Git repository.
+
+Git, once more, has an answer, in the form of a special file called .gitignore that can help eliminate this annoyance once and for all.
+This directory containing the .git folder is called the “root” of your project. 
+In this root directory, you can create a .gitignore file. 
+This file allows you to tell Git which files it should, well, ignore. 
+Essentially, the .gitignore file keeps untracked files out of your Git repository.
+
+After creating the .gitignore file, you should add it to the index and then commit it. 
+This makes it consistent across all collaborators working on the repository, and any changes to it will be part of your commit history.
+
+You can always search for a sample .gitignore file for a particular kind of project (Java, JavaScript, Xcode, what have you) to get to a good starting point.
+
+Just be aware! Before you use a sample .gitignore file, look it over carefully. 
+Be sure to pull in your team (if you have one) to take a look too—share it with them, 
+or issue a pull request so they can review your changes before you merge it in. 
+Once you ignore a file or a folder, Git will continue to ignore it unless you remove that entry from the .gitignore file.
+
+Commit early, commit often
+Think scope, not size! Suppose you are editing a friend’s manuscript and you catch some inconsistent verb tenses. 
+Fix those throughout the chapter, and make a commit. If you also notice a bunch of typos along the way, 
+fixing those would be a different commit. 
+You shouldn’t need to make a separate commit for every typo you fix—group them into one commit, or go chapter by chapter.
+
+Pretend you are tasked with adding a new feature to a project. 
+As a first step, you realize you need to rename a bunch of files. Rename, commit. 
+Then make the changes you need to. Commit. Update the documentation to reflect the new functionality. Then commit.
+
+See a pattern? Think about what you are putting into the commit. 
+The size of the commit is of secondary concern to what you are packing into it.
+
+As for when should you commit? If you feel you are done with a particular change, 
+go ahead and add those files to the index, then make a commit. 
+Remember, you can choose which files you add to the index—so if you somehow make different kinds of changes across many files, 
+add only those that belong together to the index. The index is a useful ally—take advantage of it!
+
+Write good commit message
+- Always use the imperative mood
+Avoid messages like “updated documentation” or “fixes login bug.” 
+Write a commit message as if you were giving the computer a command, 
+for example, “update documentation” and “fix intermittent bug when logging in.”
+
+- Avoid using the -m (or --message) flag with the git commit command
+Throughout this book, we’ve asked you supply commit messages to the git commit command using the -m flag. 
+But you’re ready to level up. Our advice going forward is to simply invoke the git commit command with no flags. 
+This will prompt Git to bring up Visual Studio Code or your default configured editor so you can type a message.
+
+The anatomy of a good commit message: headers
+--> type(scope): <summary message> (#ticket number)
+sample
+--> feat(lang): add japanese language compatibility (#78943)
+--> docs(account): adding type of users in documentation (#90435)
+--> fix(dana): bug fixing dana intermitten problem (#21977)
+All should be in lower case letter
+use feat for new feature, docs for documentation, fix for bug fixing, chore for changes effecting tooling such as git,
+test when you introduce or modified test.
+
+The anatomy of a good commit message: bodies
+Getting the header right is a very good first step, and a descriptive header is often sufficient to describe why a particular commit was made.
+But for many commits, a single-line header isn’t enough. 
+Perhaps you wish to provide more information about the change or explain why you chose a particular approach. 
+This is where the body of the commit message comes into play.
+
+--> feat(login): update css style names to be consistent (#6174)
+--> 
+--> - Allign the names for all css classes to be in with our specs
+--> - Ensure camel-case styling
+
+There is only one rule—you must separate the body from the header using a blank line. 
+Outside of that, the guidelines for writing the body are pretty relaxed—
+it’s free-form text and can be as short or long as you need it to be. 
+If you decide to write more than one paragraph, then be sure to insert a blank line between paragraphs. 
+That’s it!
+
+Good sample for perfect commit messages.
+https://github.com/angular/angular
+https://www.conventionalcommits.org
+
+Create helpful branch names
+If you think of a repository as a story, then commits represent its plot points—and branches are the narrative arc. 
+So be just as diligent when naming your branches as when drafting your commits.
+--> rg/1618/remove-typo-in-documentation
+- rg
+Prefix the name of the branch with your initials. 
+This makes it easy to discern who created which branches when you list them (using the git branch command with the -a or --all flag).
+- 1618
+We have always recommended that you check your Git status before adding files to the index or making commits. 
+Since Git always displays the branch name in the output of the git status command, which will now include the ticket number, 
+you’ll always have it when you’re about to commit. No need to dig up your notes or fire up the task tracking tool—it’s right there!
+-- remove-typo-in-documentation
+Finally, we arrive at a brief description of the task at hand. 
+We usually just grab the title of the ticket, lowercase it, convert the spaces to hyphens, and remove any superfluous words. Done! 
+By incorporating a clear (but short) description of the task, we leave ourselves a mental bookmark. 
+If we have to switch tasks, this will make it easier for us to remember what we were working on when we come back.
+
+Naming is hard. Having a strategy can make it easier, and being consistent about it can make your life and your collaborators’ lives easier.
+
+Integrate a graphical user interface into your workflow
+The first thing to know about GUI tools is that, for any operation, they invoke Git commands. 
+In other words, they can’t do anything that the Git command line can’t do. 
+But they can make things easier and more convenient. Here are a few options we like:
+- Sourcetree --> highly recommended
+- github desktop
+- gitlens
+
+
+
+
+
+
+
+
+
