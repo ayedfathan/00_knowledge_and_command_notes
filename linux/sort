@@ -11,4 +11,9 @@ to make the result of sort uniq add -u
 to reverse, descending order -r
 for numeric -n
 
+--> sort -t: -k6,6 /etc/passwd
+sort /etc/passwd with delimiter : and only sort based on field 6 and 6 only
+
+--> sort -t: -k7,7 -k3,3nr -k4,4nr /etc/passwd
+sort /etc/passwd with delimiter :, and sort first by column 7 ascending and then colum 3 desc and colum 4 desc
 
