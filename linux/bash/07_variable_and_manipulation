@@ -1,0 +1,174 @@
+Using variables
+The basic form of a variable assignment in shell script looks like this:
+--> myshell='GNU Bourne-Again shell'
+
+You will need to quote any value that contains special characters in variable assignments. 
+For new shell programmers, it is safest to quote all the values in their assignments; 
+it might be unnecessary in some cases, but it doesn't do any harm, and it's easier to manage:
+--> myshell='sh'
+--> myvar='GNU'\''s Not Unix!'
+--> myprompt="$USER@$HOST"
+
+After a variable has been assigned a value, you can check it by using printf or echo:
+--> $ today='August 9th'
+--> $ printf '%s\n' "$today"
+--> August 9th
+
+Naming variables
+A variable name in bash must begin with a letter or an underscore, and can be followed by any letter or number, or more underscores.
+
+If you want to assign a variable an empty value, you can do so by leaving the right side of an assignment to the variable blank:
+--> $ system=
+
+The system variable is defined, but empty. POSIX shell script actually does not make much of a distinction between these two states. 
+It's more common to test whether a variable is empty than it is to check whether it's defined:
+--> #!/bin/bash
+--> # If the 'system' variable is not empty, print its value to the user
+--> if [[ -n $system ]] ; then
+-->     printf 'The "system" variable is: %s\n' "$system"
+--> fi
+
+You can actually remove a variable with unset:
+--> $ unset -v system
+--> $ declare -p system
+--> bash: declare: system: not found
+
+If you do ever need to check whether a variable is defined, Bash allows you to do this with the -v test; note that we use system, not $system, here:
+--> #!/bin/bash
+--> # If the "system" variable has been set--even if it's empty--print its
+--> # value to the user
+--> if [[ -v system ]] ; then
+-->     printf 'The "system" variable is: %s\n' "$system"
+--> fi
+
+Expanding variables
+Bash, and shell scripting languages in general, refer to the process of evaluating variables and other parameters such as $1 as parameter expansion.
+
+The safest way to use parameter expansion is to prefix the name of the variable with a dollar sign as part of a double-quoted string:
+--> $ realname='Bash User'
+--> $ printf '%s\n' "Hello, $realname."
+--> Hello, Bash User.
+
+If you need to distinguish the variable name from characters around it, you can use curly brackets:
+--> $ printf '%s\n' "__Hello, ${realname}__"
+--> __Hello, Bash User__
+This prevents Bash from trying to expand a variable named realname__, with two trailing underscores.
+
+Note that if you expand a variable that doesn't exist, by default Bash does not issue any warnings; it just replaces the variable with an empty string:
+--> $ printf '%s\n' "Hello, $notset."
+--> Hello, .
+
+Reading a value into a variable
+The read builtin command with its -r option can be used to read values into variables from standard input, including directly from the terminal:
+--> $ read -r myname
+--> Bash User
+
+You should always use the -r option with read, to avoid running into confusing issues with reading backslashed values.
+
+Getting command output in variables
+We can get command output in variables using command substitution. For example, to assign the output of the whoami command to the myusername variable, we could use the following:
+--> $ myuser="$(whoami)"
+--> $ printf '%s\n' "$myuser"
+--> bashuser
+Don't forget to use double quotes around the expansion, so that special characters, such as spaces and asterisks, don't get treated specially by the shell.
+
+Command substitutions can be nested, but note that the double quotes are still required even on the inner expansion to suppress unwanted expansion:
+--> $ mypwent="$(getent passwd "$(whoami)")"
+
+Specifying default values
+If a variable may not have a value in a script, you can specify a default or "fallback" value for it with the form "${myvar:-default}", 
+where default is the string you want to use instead of the variable's value if it's unset or blank. 
+This can be useful for default directories that can be overridden by environment variables, if present:
+
+--> cd -- "${MYSCRIPT_DIR:-/usr/local/myscript}"
+--> ...
+
+This script will change into the directory named in the MYSCRIPT_DIR environment variable if set, or the /usr/local/myscript directory it it is not set, or if it is blank.
+
+If you use the  := characters instead of :-, you can additionally assign the default value to the environment variable for the rest of the script:
+
+--> cd -- "${MYSCRIPT_DIR:=/usr/local/myscript}"
+--> ...
+If it was initially unset or blank, then after the first line of the preceding script, MYSCRIPT_DIR will additionally be set to /usr/local/myscript for the remainder of the script.
+
+String chopping
+There are also some ways to perform string "chopping" via parameter expansion, which are frequently useful for trimming paths. 
+The "${myvar#prefix}" form removes one occurrence of prefix from the variable's expansion:
+
+--> $ ta='type:json'
+--> $ printf 'Type: %s\n' "${ta#type:}"
+--> Type: json
+
+We can chop a string from the end of the value instead using % instead of #:
+--> $ ta='type:json'
+--> $ printf 'Field name: %s\n' "${ta%:*}"
+--> Field name: type
+
+--> $ text='*WARNING'
+--> $ printf '%s\n' "${text#\*}"
+--> WARNING
+--> $ printf '%s\n' "${text#'*'}"
+--> WARNING
+
+The preceding forms will will lean toward removing smaller occurrences of the pattern rather than larger ones. 
+If you want to chop the longest possible match of a pattern with * in it, double the applicable sign: # becomes ##, and % becomes %%. 
+The first is useful for stripping an entire leading path with */:
+
+--> $ path=/usr/local/myscript/bin/myscript
+--> $ printf 'Filename with path removed: %s\n' "${path##*/}"
+--> Filename with path removed: myscript
+
+Extracting substrings
+If we know a specific substring we want to extract from a variable by where it starts, and optionally how long it is, we can use the ${var:start} or ${var:start:length} form:
+
+--> bash$ title='== Password =='
+--> bash$ printf '%s\n' "${title:3}"
+--> Password ==
+--> bash$ printf '%s\n' "${title:3:8}"
+--> Password
+By specifying a negative start value, you can start the counting from the end of the string, starting at -1:
+
+--> bash$ alpha='abcdefghijk'
+--> bash$ printf '%s\n' "${alpha: -3:2}"
+--> ij
+Note that we had to add a space prefix before the minus sign, to prevent the shell from interpreting this as the unrelated :- form.
+
+Getting string length
+The "${#myvar}" form can be used to expand to the length of a string:
+
+--> bash$ alpha='abcdefghijk'
+--> bash$ printf '%u\n' "${#alpha}"
+--> 11
+While this form is Bash-specific, it's a short and convenient alternative to counting characters with wc. 
+Note that it counts characters according to your locale, not bytes, and not screen columns either, 
+so be cautious when counting characters outside the ASCII set. 
+Some Japanese characters, for example, will expand to "1" with an en_US.UTF-8 locale, even though they're 4 bytes long, and will usually take 2 screen columns.
+
+Substituting strings
+Substituting patterns in expansions can be done with the "${myvar/pattern/replacement/}" form:
+
+--> bash$ promise='I'\''ll do it today.'
+--> bash$ printf '%s\n' "${promise/today/tomorrow}"
+This only replaces the first instance of the pattern. If you want to replace all instances of the pattern, use two slashes before the first pattern rather than just one:
+
+--> bash$ promise='Yes, today. I'\''ll do it today.'
+--> bash$ printf '%s\n' "${promise/today/tomorrow}"
+--> Yes, tomorrow. I'll do it today.
+--> bash$ printf '%s\n' "${promise//today/tomorrow}"
+--> Yes, tomorrow. I'll do it tomorrow.
+Note that the pattern being replaced uses the wildcard (globbing) syntax, with * matching multiple characters, 
+and ? matching only one; it is not a regular expression as might be used with sed or awk:
+
+--> bash$ promise='Yes, today. I'\''ll do it today.'
+--> bash$ printf '%s\n' "${promise/today*/I\'ll do it soon.}"
+--> Yes, I'll do it soon.
+
+Changing case
+You can have a variable expand into its value with all characters uppercase or lowercase using the "${myvar^^}" and "${myvar,,}" forms, respectively:
+
+--> bash$ fn='mixedCase'
+--> bash$ printf '%s\n' "${fn^^}"
+--> MIXEDCASE
+--> bash$ printf '%s\n' "${fn,,}"
+--> mixedcase
+
