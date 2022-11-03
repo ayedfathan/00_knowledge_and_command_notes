@@ -1,0 +1,11 @@
+Piping output from multiple programs
+The most straightforward way to do this is with a group command, which is delimited with curly brackets, { and }:
+--> $ { date ; hostname ; } | tr a-z A-Z
+--> MON JUL 30 21:38:52 NZST 2018
+--> BASHSERVER.EXAMPLE.NET.
+
+Input and output redirection can also apply to compound commands:
+--> $ { date ; printf '%s\n' apple carrot banana ; } > mywords
+--> $ { read date ; printf '%s\n' "$date" ; sort ; } < mywords
+
+
