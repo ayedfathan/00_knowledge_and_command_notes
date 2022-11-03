@@ -1,0 +1,66 @@
+Quoting in BASH
+The way you can reliably include characters that are special to Bash literally in a command line is to quote them. 
+Quoting special characters makes Bash ignore any special meaning they may otherwise have to the shell, 
+and instead use them as plain characters, like a-z or 0-9. This works for almost any special character.
+
+If you learn to quote correctly, you will save yourself a lot of trouble down the line. 
+The way quoting in shell script works very often surprises people coming from other programming languages.
+
+There are three kinds of quoting: escaping(\), single-quoting(''), and double-quoting("").
+
+Escaping
+
+using escaping using backslashes
+--> touch important\ files --> will create a file with name "important files"
+--> touch testfile\<tom\>.doc --> will create a file with name "testfile<tom>.doc"
+--> touch review\;final.doc --> will create afile with name "review;final.doc"
+--> touch \$$\$money.doc --> will create a file with name "$$$money.doc"
+
+all those special character treated as normal character becaue of backslahes
+backslashes can escape another backslashes
+--> echo \\backslash\\
+
+Single quotes
+Anything inside single quote will be treated as simple character, no special characters.
+--> $ touch 'important files'
+--> $ touch 'Testfile<Tom>.doc'
+--> $ touch 'Review;Final.doc'
+--> $ touch '$$$Money.doc'
+
+--> $ echo 'quotes
+--> > foo
+--> > bar'
+--> quotes
+--> foo
+--> bar
+
+even newline can be handled with single quote
+
+
+Double quotes
+Double quotes behave similarly to single quotes, but they perform certain kinds of expansion within them, for shell variables and substitutions. 
+This can be used to include the value of a variable as part of a literal string:
+
+--> $ echo "This is my login shell: $SHELL"
+--> This is my login shell: /bin/bash
+
+Compare this to the literal output of single quotes:
+--> $ echo 'This is my login shell: $SHELL'
+--> This is my login shell: $SHELL
+
+You can include a literal dollar sign or backslash in a string by escaping it:
+--> $ echo "Not a variable: \$total"
+--> Not a variable: $total
+--> $ echo "Back\\to\\back\\slashes"
+--> Back\to\back\slashes
+
+Quote concatenation
+You may have noticed from the examples in the previous section that you can put different types of quoting together in the same word, 
+as long as they can never separated by an unquoted space:
+--> $ echo Hello,\ "$USER"'! Welcome to '"$HOSTNAME"'!'
+--> Hello, bashuser! Welcome to bashdemo!
+
+In Bash, there's no concatenation operator like Perl or PHP's dot (.); to concatenate strings, you just put them next to each other. 
+This can be a good idea if you have a mix of literal strings and variables in a single shell word, 
+as it can help you avoid getting caught out by a stray dollar sign, backtick, exclamation mark, or backslash within double-quote pairs.
+
