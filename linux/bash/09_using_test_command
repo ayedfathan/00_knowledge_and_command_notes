@@ -1,0 +1,26 @@
+Using the test command
+The POSIX standard for the shell scripting language specifies a command named test that can be used to test something, 
+and return an exit status to reflect the result.
+
+Which kind of expression to evaluate is specified with the arguments to test. 
+A straightforward and useful test is string equality; are two strings the same? 
+We can try this out with an equals sign between two other shell words:
+
+--> $ myshell=bash
+--> $ test "$myshell" = 'sh' && printf 'Match!\n'
+--> $ test "$myshell" = 'bash' && printf 'Match!\n'
+--> Match!
+
+Note that the equals sign needs to be a separate word for the test arguments, 
+with spaces before and after, unlike the variable assignment, where we cannot have spaces.
+
+Many other tests are possible:
+
+--> test -e 'myfile': Whether a file or myfile directory exists
+--> test -n "$myvar": Whether a myvar variable is set and not empty
+--> test -d 'mydir': Whether a directory with the name mydir exists
+--> test -s 'myfile': Whether a file myfile file is not empty
+
+
+You can see a complete list of these with help test. 
+You are likely to refer to this particular help page many times during your career as a Bash programmer!
