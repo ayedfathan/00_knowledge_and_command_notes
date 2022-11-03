@@ -1,0 +1,34 @@
+Arithmetic conditions
+The POSIX specification for the test and [ commands includes a few arithmetic tests for integers:
+
+--> [ "$a" -eq "$b" ]: Equal
+--> [ "$a" -ne "$b" ]: Not equal
+--> [ "$a" -lt "$b" ]: Less than
+--> [ "$a" -le "$b" ]: Less than or equal to
+--> [ "$a" -gt "$b" ]: Greater than
+--> [ "$a" -ge "$b" ]: Greater than or equal to
+
+Sometimes using these tests with expansion of arithmetic expressions can be unwieldy to write; 
+for example, if we wanted to test whether the value of the bytes variable, divided by 1,000, was greater than the kbytes variable, we might write:
+--> if [ "$((bytes / 1000))" -gt "$kbytes" ] ; then
+-->     ...
+--> fi
+
+
+Bash includes its own syntax for testing arithmetic expressions with (( – without a leading $ sign – including all the terms in one expression, 
+which is somewhat easier to read and debug:
+--> if ((bytes / 1000 > kbytes)) ; then
+-->     ...
+--> fi
+
+The double parentheses, ((...)), can contain any arithmetic expression, Variables and Patterns, and it is treated like a command – 
+its exit value reflects the outcome of the expression. An outcome of 0 is treated as false and exits with status 1, 
+and any other outcome is treated as true, and exits with status 0:
+--> ((2 > 0))  # True; exits 0
+--> ((a = 1))  # True; exits 0, and variable a is assigned the value 1
+--> ((0 > 3))  # False; exits 1
+--> ((0))      # False; exits 1
+--> ((a = 0))  # False; exits 1, and variable a is assigned value 0
+
+These expressions are very powerful and somewhat easier to manipulate than their POSIX-standardized equivalents. 
+Remember that all of the arithmetic operations use integers only – no fractional (fixed or floating point) numbers.
