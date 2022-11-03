@@ -1,0 +1,16 @@
+Running command in sequence
+You can send an interactive command line with more than one simple command in it, separating them with a semicolon, one of several possible control operators. 
+Bash will then execute the commands in sequence, waiting for each simple command to finish before it starts the next one. 
+For example, we could write the following command line and issue it in an interactive Bash session:
+--> $ cd ; ls -a ; mkdir New
+
+For this command line, note that even if one of the commands fails, Bash will still keep running the next command.
+
+If you wanted to issue a set of commands on one command line, but only to continue if every command worked, 
+you would use the double-ampersand (&&) control operator, instead of the semicolon (;):
+--> $ cd && rmdir ~/nonexistent && ls
+
+Similarly, if we changed the cd command at the start of the command line to change into a directory that didn't exist, the command line would stop even earlier:
+--> bash$ cd ~/nonexistent && rmdir ~/nonexistent && ls
+--> bash: cd: /home/bashuser/nonexistent: No such file or directory
+
