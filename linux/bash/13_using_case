@@ -1,0 +1,40 @@
+Bash's extension to string equality tests for pattern matching is useful, 
+but it can sometimes be more convenient to use the older POSIX-specified case construct, 
+which is shell script's analogue of the C switch statement.
+
+The case statement allows us to run commands based on the outcome of matching a string against glob patterns. 
+For example, to check whether the command variable matches help, we might do this:
+
+--> case $command in
+-->     help) printf 'Command help:\n...' ;;
+--> esac
+
+Note the following details of this syntax:
+- You don't have to double-quote $command just after the case statement.
+- The pattern to match has a closing ), but does not require an opening one.
+- The closing keyword is esac, which is case spelled backwards, just as the closing keyword for  if is fi.
+- Each option is terminated with two semicolons.
+
+We can add other options according to the same pattern:
+--> case $command in
+-->     help) printf 'Command help:\n...' ;;
+-->     version) printf 'Command version: 0.1.0\n' ;;
+--> esac
+
+We can specify alternative values for any of these options for the same outcome by separating the patterns with a pipe character:
+--> case $command in
+-->     help|h|usage) printf 'Command help:\n...' ;;
+--> esac
+
+Perhaps most usefully, we can include glob-matching characters: *, ?, and [...] to test for partial matches. 
+This is a good way to have a "catch all" or default option if nothing else matches:
+--> case $command in
+-->     debug|verb*)
+-->         printf 'Running in verbose mode.\n'
+-->         verbose=1
+-->         ;;
+-->     *) printf 'Unknown command\n' ;;
+--> esac
+
+Remember that only the first condition that matches will be run; 
+the others will be ignored, as long as they're correctly separated with two semicolons, ;;.
