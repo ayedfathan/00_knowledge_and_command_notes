@@ -1,0 +1,17 @@
+Sending output to more than one file
+using output redirection you can send the output of command to a file.
+if you want to send to multiple file, then use tee
+--> $ printf 'Copy this output\n' | tee myfile
+--> Copy this output
+--> $ cat myfile
+--> Copy this output
+
+Notice that the output went to both the terminal and to myfile. This works when multiple files are specified, too:
+
+--> $ printf 'Copy this output\n' | tee myfile1 myfile2 myfile3
+--> Copy this output
+--> $ ls myfile*
+--> myfile1  myfile2  myfile3
+
+You can use the -a option of tee to append to files rather than overwriting them, much like using >> instead of >.
+
