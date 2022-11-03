@@ -1,0 +1,15 @@
+sing the [ command
+A better-known form of the test command is the [ command. 
+The primary difference between the two is that ] must be the last argument to [. 
+This makes it look very much like a special syntax for shell script, but it isn't; it's just another command:
+
+--> $ [ "$myshell" = 'bash' ] && printf 'Match!\n'
+
+Being a command, this syntax can be used after if, just like the grep and cd examples earlier in this chapter:
+
+--> myshell=bash
+--> if [ "$myshell" = 'bash' ] ; then
+-->     printf 'Match!\n'
+--> fi
+
+This is all specified by POSIX. Note that we still had to quote our variable to prevent special characters in its value from causing unwanted glob or whitespace expansion.
