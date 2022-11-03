@@ -1,0 +1,18 @@
+Exit values
+You can check the exit value from the last command from $?
+--> $ rmdir ~/nonexistent
+--> rmdir: failed to remove '/home/bashuser/nonexistent': No such file or directory
+--> $ echo $?
+--> 1
+
+--> $ mkdir ~/existent
+--> $ echo $?
+--> 0
+--> $ rmdir ~/existent
+--> $ echo $?
+--> 0
+
+It's standard for programs to return 0 when they succeed, and something greater than 0 if they fail. 
+Beyond that, programs vary in which exit values they choose for error conditions.
+
+
