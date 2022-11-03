@@ -1,0 +1,32 @@
+Using the [[ keyword
+Bash provides its own improved version of the [ command, doubling it to [[. 
+It's actually a shell keyword, a special part of the Bash syntax, and not just a regular builtin command:
+
+--> #!/bin/bash
+--> myshell=bash
+--> if [[ $myshell = 'bash' ]] ; then
+-->     printf 'Match!\n'
+--> fi
+
+One advantage of the [[ keyword over the [ builtin is that less quoting is required. 
+You may notice in the preceding example that $myshell is not in double quotes.
+
+Unfortunately, this benefit does not apply to the right-hand side of the =, ==, !=, or =~ operations. 
+If you're testing two variables for equality, for example, you will still need to quote the one to the right of the equals sign:
+
+--> [[ $myshell = "$yourshell" ]]
+If you find this too confusing (or imbalanced!), you can just double-quote variables on both sides, 
+the same way you would with the [ command; it doesn't do any harm:
+
+--> [[ "$myshell" = "$yourshell" ]]
+Most of the tests described in help test work the same way with [[, just as well as they do with [ or test itself. 
+However, there are a few other differences. The first is that equality or inequality testing on strings does glob matching:
+
+--> [[ $myshell = b* ]]
+Because the right side of this expression is unquoted, 
+Bash will check whether the value of the myshell variable starts with b; the rest of it can be any other set of characters, or none at all.
+
+The [[ keyword also supports a new operator, =~, to test whether strings match regular expressions:
+
+--> [[ $myshell =~ 'sh$' ]]
+This will test whether the myshell variable's value ends with the letters sh, with $ being a regular expression metacharacter meaning "end of string."
