@@ -1,0 +1,49 @@
+Using a long string as input with here-documents
+In some cases, you may have a long multi-line string for input to a command in your script that you don't want to separate into another file. 
+This is often the case with output for -h or --help options, where you don't want to store the help information outside the script.
+
+Because quoted strings can include multiple lines, we can just use printf for this; it works fine, emitting multiple lines of output:
+--> #!/bin/bash
+--> case $1 in
+-->     -h|--help)
+-->         printf '%s\n' 'foo command help:
+--> -h, --help: Show this help
+--> -q, --quiet: Run without diagnostics
+--> -v, --verbose: Add extra diagnostics'
+-->         exit 0
+-->         ;;
+--> esac
+
+The preceding snippet could be rewritten to use a here-document in cat, instead of an argument to printf:
+--> #!/bin/bash
+--> case $1 in
+-->     -h|--help)
+-->         cat <<'EOF'
+--> foo command help:
+--> -h, --help: Show this help
+--> -q, --quiet: Run without diagnostics
+--> -v, --verbose: Add extra diagnostics
+--> EOF
+-->         exit 0
+-->         ;;
+--> esac
+
+If you want to expand variables or do command substitution inside a here-document, you can leave out the single quotes around the delimiter. 
+The here-document then expands variables and substitutions inside it, much like a double-quoted string. 
+This allows you to use values from the environment or elsewhere in the program in the string:
+
+--> #!/bin/bash
+--> cat <<EOF
+--> Hello, $USER; you are running this program on $(hostname -s).
+--> Your home directory is $HOME.
+--> EOF
+
+If you really want to indent your here-documents, there is an exception to the preceding rule about leading whitespace; 
+if you include a hyphen between << and the delimiter, the tabs (but not spaces) at the front of your input lines will be ignored:
+--> #!/bin/bash
+--> cat <<-'EOF'
+-->     Leading tabs
+-->         will not be included in the output
+--> EOF
+
+
