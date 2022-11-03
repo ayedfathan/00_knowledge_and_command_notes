@@ -1,0 +1,65 @@
+Using the if keyword
+A shell script is fundamentally a sequence of commands. In such a script, we very often want to run a command only if a testable condition is true. 
+In earlier chapters, we already saw one way to do this, with the && control operator:
+
+--> $ grep -q bash /etc/shells && printf 'Bash is a system shell\n'
+
+The preceding command line separates two commands with &&. The second command, which prints a string to standard output, 
+only runs if the first command, grep -q bash /etc/shells, 
+finds the bash string in the /etc/shells file and hence exits with status zero (success).
+
+Using the if keyword, we can make this conditional approach more flexible, and somewhat easier to read:
+--> $ if grep -q bash /etc/shells ; then printf 'Bash is a system shell\n' ; fi
+
+The preceding command line could also be written like this in script form:
+--> if grep -q bash /etc/shells ; then
+-->     printf 'Bash is a system shell\n'
+--> fi
+`
+Don't forget the then keyword, with the ; separator before it; both are required. 
+If you prefer, you can put then on a new line after the test command instead.
+
+Note that the keyword at the end of the condition, fi, is just if backwards.
+In shell script, what is expected after the if keyword is not an expression, 
+but a command to run, the outcome of which determines whether the code between the then and fi keywords is run.
+
+The command line tested by if can be any command, builtin or not. 
+For example, you can execute commands only if an attempt to change the working directory with cd was successful:
+
+--> if cd /usr/local ; then 
+-->     printf >&2 'Successfully changed directory\n' 
+--> fi
+--> We can reverse the test using the ! keyword before the command, separated by spaces:
+--> 
+--> if ! cd /usr/local/myscript ; then
+-->     printf >&2 'Failed to changed directory\n'
+-->     exit 1
+--> fi
+
+The printf command in this example would only run if the script's attempt to change the working directory to /usr/local/myscript failed. 
+Coupled with an early exit, this can be an effective way to abort a script and prevent the rest of it from running if some essential condition can't be met.
+
+There are also elif and else keywords for using after if to perform successive tests and specify alternatives if the initial command exits with failure:
+
+--> if cd /usr/local/myscript ; then
+-->     printf >&2 'Changed to primary directory'
+--> elif cd /opt/myscript ; then
+-->     printf >&2 'Changed to secondary directory'
+--> else
+-->     printf >&2 'Couldn'\''t find a directory!'
+-->     exit 1
+--> fi
+
+The script will try to change its working directory to /opt/myscript only if its attempt to change it to /usr/local/myscript fails first. 
+If both attempts fail, it will print an error message, and then exit with 1 (failure).
+
+We can perform a lot of useful logic by testing commands once we know how their exit values work, 
+but very often – perhaps more often – what we actually want is to test some sort of conditional expression, for example:
+
+- Does a variable's value match a string?
+- Is a variable empty?
+- Is one number greater than another?
+- Is a file empty?
+
+
+There are dedicated commands that are designed to help us do all of this.
