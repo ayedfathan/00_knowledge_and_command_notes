@@ -1,0 +1,39 @@
+#!/bin/bash
+
+file_in='./list'
+file_out='./list.out'
+
+# Check if file in is exist and can be read and not empty
+if [ ! -f "$file_in" ] || [ ! -r "$file_in" ] || [ ! -s "$file_in" ]; then
+	printf '%s\n' "Make sure file $file_in is exists, and not empty also had read permission"
+	exit 1
+fi
+
+# check if file out is exist, if exist make sure agree to overwrite,
+if [ -f "$file_out" ] ; then
+	printf "File $file_out is exists, are you sure want to overwrite [y/N] ? "
+	read -r response
+	if [ "${response^}" != 'Y' ] ; then
+		exit 1
+	fi
+fi
+
+# Initializing file out as an empty file,  exit if failed
+if ! (rm -f "$file_out" && touch "$file_out") ; then
+	printf "ERROR - Failed initializing $file_out \n"
+	exit 1
+fi
+
+# read line by line in file in
+while read -r line; do
+	# cleanup line from unnecessary space
+	line="$(echo $line | sed 's/^- // ; s/[[:blank:]]*,[[:blank:]]*/,/g ; s/^[[:blank:]]*$//g')"
+	num_fields="$(echo $line | awk -F, 'END {print NF}')"
+	case $num_fields in
+		1) state="$line" ;;
+		3) printf '%s,%s\n' "$line" "$state" >> "$file_out" ;;
+		0) continue ;;
+		*) printf 'ERROR - Number of fields %u, not recognized\n' "$num_fields"
+		   exit 1 ;;
+	esac
+done < "$file_in"
