@@ -1,0 +1,29 @@
+The for keyword is used to define code to run repeatedly over a list of shell words:
+
+--> #!/bin/bash
+--> for system in bsd linux macosx windows ; do
+-->     printf '%s\n' "${system^^}"
+--> done
+
+The preceding code loops through the list of four items, assigning each one in turn to the system variable. 
+The body of the loop prints the value of the system variable in all caps, for each iteration of the loop.
+
+Note the following about the preceding syntax:
+- The variable name goes just after for, and before in
+- do is required and needs to be after the semicolon, to specify where the variable and list of words finishes
+- The loop is closed with done, not rof as you might have expected from fi and esac
+- The list of words can be blank; for system in ; do ... ; done is not a syntax error, it just does nothing
+
+The for loop is hence the correct choice for iterating over an arbitrary number of arguments on which your script or function is running. 
+It's also the correct choice for iterating over arrays, which we can think of as storage for an arbitrary number of shell words:
+
+--> #!/bin/bash
+--> systems=(bsd linux macosx windows)
+--> for system in "${systems[@]}" ; do
+-->     printf '%s\n' "${system^^}"
+--> done
+
+This uses the special array subscript of @ that we discussed in our introduction to arrays, Variables and Patterns, expanding to every value in the array. 
+Don't forget the all-important double quotes around the expansion, too: "${systems[@]}", never ${systems[@]}.
+
+

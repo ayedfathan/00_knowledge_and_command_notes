@@ -1,0 +1,92 @@
+We mentioned earlier in this chapter that for loops are often misused to read data line by line from files, or from the output of command pipes. 
+The correct way to do this is with a very common idiom for use with while loops: repeatedly running the read command, always with its -r flag.
+
+Consider a file named fcs, with the names of four famous computer scientists, one on each line:
+
+--> Ken Thompson
+--> Dennis Ritchie
+--> John McCarthy
+--> Larry Wall
+
+Suppose we wanted to print only the last name of each of our computer scientists. 
+We could use the read command's built-in word splitting to do this, by specifying two variables after -r:
+
+--> while read -r firstname lastname ; do
+-->     printf '%s\n' "$lastname"
+--> done < fcs
+
+Because there is more than one variable name given, each line read is split at the first space or tab, 
+and the line up to that point is saved into the firstname variable. Because lastname is the last variable on the line, 
+the entire rest of the line—not only the last field—is saved into that.
+
+Using the -a option to the read builtin, we can save the separated fields of a read line of input as an array variable, 
+instead of a set of named string variables. This is particularly useful if we have a varying number of fields on each line:
+
+--> $ cat animals-by-letter
+--> alligator anteater armadillo
+--> bee
+--> caribou cat
+--> 
+--> elephant
+Note that the fourth line in the preceding data is blank!
+
+We can get an array of all the animals on each line, as separated by spaces, into an array named animals for each loop run, 
+and then iterate over that array with a for loop; a loop within a loop:
+
+--> #!/bin/bash
+--> while read -r -a animals ; do
+-->     for animal in "${animals[@]}" ; do
+-->         printf '%s\n' "$animal"
+-->     done
+--> done < animals-by-letter
+
+another sample
+--> #!/bin/bash
+--> 
+--> while read -r line; do
+-->         shell="$(echo ${line} | cut -d: -f7)"
+-->         if [[ "${shell}" == '/bin/bash' ]]; then
+-->                 printf '%s\n' "${line}"
+-->         fi
+--> done < /etc/passwd
+
+The read builtin checks a special variable named IFS – the Internal Field Separator – to decide where to split the line it reads. 
+If this variable is unset, as it has been for our examples so far, it splits on groups of spaces and tabs.
+
+If our data is separated by some other character, for example by colons in /etc/passwd, we can set IFS as an environment variable for read to influence its behavior. 
+For example, to print every numeric user ID from the file without using cut, we could do this:
+--> while IFS=: read -r user pass uid gid gecos home shell ; do
+-->     printf '%s\n' "$uid"
+--> done < /etc/passwd
+
+Notice that the setting for IFS to the colon character, :, occurs just before the read command, and there is no control ...
+
+It's important to note that by default, read ignores spaces and tabs at the start and end of a line when reading fields into variables:
+
+--> $ cat lines
+--> Line one
+-->     Line two
+-->   Line three
+--> $ while read -r line ; do printf '%s\n' "$line" ; done
+--> Line one
+--> Line two
+--> Line threedone <lines
+
+A lot of the time, this is what you want, but if you do actually want the line literally in one variable including any leading and trailing spaces or tabs, 
+you need to set IFS to a blank value for the read command:
+
+--> $ while IFS= read -r line ; do printf '%s\n' "$line" ; done <lines
+--> Line one
+-->     Line two
+-->   Line three
+
+This also suppresses the field-splitting completely, of course, so you can only read the whole line into one variable this way.
+
+As a compound command, a while loop can also accept the output of another command as input, using a pipe. 
+For example, to pass the output of who -T to the loop as input, to print only the terminal names for active users on the system, we might write:
+
+--> who -T | while read -r username state terminal _ ; do
+-->     printf '%s\n' "$terminal"
+--> done
+
+

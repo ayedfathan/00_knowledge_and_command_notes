@@ -1,0 +1,18 @@
+Skipping an iteration
+You can use the continue keyword to skip the rest of the current iteration and start the next one, if there is any. 
+For example, this code gets the size of every one of a set of directories, but it only runs du if the directory actually exists:
+
+--> #!/bin/bash
+--> dirs=(/bin /home /mnt /opt /usr)
+--> for dir in "${dirs[@]}" ; do
+-->     [[ -d $dir ]] || continue
+-->     du -s -- "$dir"
+--> done
+
+The continue keyword skips to the next run of the loop if the directory does not exist. 
+It uses the || control operator to do this; if you prefer, you could write it with a full if statement instead.
+
+As well as testing for the general case of file existence or type, loop continuations such as this are a useful method for dealing with unexpanded glob patterns. ...
+You can skip the whole loop process and comes out from it with break
+
+

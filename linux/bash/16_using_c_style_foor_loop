@@ -1,0 +1,15 @@
+Using Bash's C-style for loops
+Bash extends the for keyword to provide functionality similar to the three-argument for loop used in C:
+
+--> #!/bin/bash
+--> for ((i = 1 ; i <= 10 ; i++)) ; do
+-->     printf '%u\n' "$i"
+--> done
+
+The preceding code prints the numbers from 1 to 10, each terminated by a newline, 
+by assigning each number to the i variable in turn and then printing it. 
+When followed by an unquoted ((, the meaning of for changes; it does not iterate over a list of words, 
+but instead loops using the three semicolon-separated statements in the double parentheses like so:
+
+The first expression is run before the loop starts: We assign the i value to zero to start it off.
+The second expression is the test used to determine whether the loop should continue ...

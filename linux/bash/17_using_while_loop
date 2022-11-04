@@ -1,0 +1,18 @@
+Using while loops
+The while loop runs a command repeatedly, running the commands in the body of the loop each time the test command succeeds, 
+and terminating the loop as soon as the command fails.
+
+We could write the loop that prints the numbers from 1 to 10 that we implemented with for in the previous section like so:
+
+--> #!/bin/bash
+--> ((i = 1))
+--> while ((i < 10)) ; do
+-->     printf '%u\n' "$i"
+-->     ((i++))
+--> done
+
+Note the similarity to the C-style for loop here, with the difference that the first expression, 
+i = 1, and the third expression, i++, have been moved out into separate statements.
+
+A while loop also behaves much like a for loop in terms of flow control: 
+an iteration of the loop can be skipped with continue, and the whole loop can be terminated with ...
