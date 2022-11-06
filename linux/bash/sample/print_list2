@@ -1,0 +1,85 @@
+
+#!/bin/bash
+
+file_in='./list'
+file_out='./list.out'
+
+
+validate_file_input(){
+# Returning error if the file is not exits, or not readable or empty
+	if [ ! -f "$1" ] || [ ! -r "$1" ] || [ ! -s "$1" ] ; then
+		return 1
+	fi
+}
+
+exit_with_error(){
+# Printing the error message and the exit the script due to error
+	printf >&2 '%s\n' "$1"
+	exit 1
+}
+
+
+get_user_approval(){
+# Getting user approval for overwriting the existing file output
+        printf 'File %s is exists, are you sure want  to overwrite [y/N] ? ' "$1"
+        read -r response
+        if [ "${response^}" != 'Y' ] ; then
+		exit_with_error "EXIT - Refuse to overwrite the output file --> $1"
+        fi
+
+}
+
+
+initialize_file_output(){
+# Initializing the output file
+# Remove the existing file and the create empty file
+	rm -f -- "$1" || exit_with_error "ERROR - Not able to initialize (removing file) the output file --> $1 "
+	touch -- "$1" || exit_with_error "ERROR - Not able to initialize (creating file) the output file --> $1 "
+}
+
+
+create_output(){
+# Generate the output file from input
+	while read -r line ; do
+		# cleanup line from unnecessary space
+		line="$(echo $line | sed 's/^- // ; s/[[:blank:]]*,[[:blank:]]*/,/g ; s/^[[:blank:]]*$//g')"
+		# get number of fields from the line
+		num_fields="$(echo $line | awk -F, 'END {print NF}')"
+
+		# manipulate the file based on number of fields found in the line
+		case $num_fields in
+			# line containing only state name
+			1) 
+			state="$line" 
+			printf >&1 'INFO - Found state %s\n' "$state";;
+			# line containing the user info, save it to output file
+			3) 
+			printf '%s,%s\n' "$line" "$state" >> "$2" 
+			printf >&1 'INFO - Create person record for %s\n' "$line";;
+			# blank line, skip and goes to the next line
+			0) continue ;;
+			# number of fields not recognized, exit with error
+			*) exit_with_error "ERROR - Number of field not recognized --> $num_fields" ;; 
+		esac
+	done < "$1"
+}
+################################################## MAIN PROGRAM ###########################################################
+
+# Validating the input file, if failed on validation then returning the error message
+printf >&1 'INFO - Validating input file %s\n' "$file_in"
+validate_file_input "$file_in" || exit_with_error "ERROR - Make sure file $file_in is exist, readable and not empty"
+
+# check if file out is exist, if exist make sure agree to overwrite,
+printf >&1 'INFO - Checking whether file output %s exist or not\n' "$file_out"
+if [ -f "$file_out" ] ; then
+	get_user_approval "$file_out"
+fi
+
+#Initializing the output file
+printf >&1 'INFO - Initializing output file %s\n' "$file_out"
+initialize_file_output "$file_out"
+
+#Generate the output file
+printf >&1 'INFO - Generating the output\n'
+create_output "$file_in" "$file_out"
+printf >&1 'INFO - DONE, Script executed SUCCESSFULLY!!!'

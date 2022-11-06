@@ -1,0 +1,203 @@
+A simple function definition in one line to print our home directory might take the following form:
+
+--> bash$ home() { printf '%s\n' "$HOME" ; }
+
+This definition has a few parts:
+
+--> A function name, followed by a pair of parentheses. 
+The name must start with a letter, and the rest of the name must be only letters, numbers, or underscores. 
+Bash allows a space before the parentheses, if you like. In this case, our function is named home.
+--> An opening curly bracket, to open the compound command that forms the body of the function. 
+This must be followed by a space.
+--> At least one command, each one followed by a control operator, 
+in this case a semicolon, to run the command and pause execution until it completes. 
+If you leave the control operator out, you'll get a syntax error. A newline counts as a control operator.
+--> A closing curly bracket to complete the compound command.
+
+You might have seen the function keyword used as an alternative way to declare functions, 
+such as function mkcd { ... }. We recommend the mkcd() { ... } syntax instead, as it's consistent between shells.
+
+After the preceding function is defined in an interactive shell, 
+it can be run with the home command, and Bash's type builtin reports the home name as referring to a function:
+
+--> bash$ home
+--> /home/bashuser
+--> bash$ type home
+--> home is a function
+--> home ()
+--> {
+-->     printf '%s\n' "$HOME"
+--> }
+
+Passing arguments to functions
+If we try to implement our mkcd alias attempt from the previous section in functions, 
+we meet with more success than our attempt with aliases. Here's one possible implementation:
+
+--> bash$ mkcd() { mkdir -p -- "$1" && cd -- "$1" ; }
+This function works as we wanted, ensuring the directory is created before we try to change into it:
+
+--> bash$ pwd
+--> /home/bashuser
+--> bash$ mkcd createme
+--> bash$ pwd
+--> /home/bashuser/createme
+
+Note that this mkcd function runs more than one command in its body: a mkdir call, and a cd call. 
+It also includes the "$1" string, which expands to the value of the first positional parameter passed to the function. 
+We can see this in action with set -x:
+
+--> bash$ set -x
+--> bash$ mkcd createme
+--> + mkcd createme
+--> + mkdir -p -- createme
+--> + cd -- createme
+--> bash$ set +x
+
+Finally, note that we put $1 in double quotes to stop any special characters in its value being interpreted by Bash, 
+per the discussion of quoting behavior. This allows us to apply mkcd to any directory name we want:
+
+--> bash$ mkcd 'My Book'
+--> bash$ mkcd '!@#$%^&*()'
+--> bash$ mkcd \'
+
+After "$1", we can get the second positional parameter with "$2", the third with "$3", and so on. 
+This can go beyond "$9" if you want, with curly brackets: "${10}", "${11}", and so on, 
+but you should not need to index arguments that far very often.
+
+Using --  to separate options from filenames
+In our mkcd example, we preceded both calls to "$1" with a double dash, --, the option terminator string. 
+This syntax specifies a point beyond which further arguments are meant as argument strings for the program, often filenames, and not as options, 
+even if they start with hyphens, such as -dirname-.
+
+If this seems unnecessary or overly cautious to you, try leaving out both of the -- strings when you define the function, 
+and then running it with a new directory name such as --parent or -virtual:
+
+--> bash$ mkcd --parent
+--> mkdir: missing operand
+--> Try 'mkdir --help' for more information.
+--> bash$ mkcd -virtual
+--> mkdir: invalid option -- 'i'
+--> Try 'mkdir --help' for more information.
+
+Imagine how hard it would be for someone else using your function to see these error messages, and to try to figure out what they did wrong!
+
+Getting all the arguments
+We could adapt our preceding mkcd function to a new function, mkls, that creates directories and then prints them with ls -dl. 
+The -d option to ls lists the directory itself, rather than its content. This implementation works well:
+
+--> bash$ mkls() { mkdir -- "$1" && ls -dl -- "$1" ; }
+--> bash$ mkls newdir
+--> drwxr-xr-x 2 bashuser bashuser 4 2018-07-17 20:30:33 newdir/
+However, this approach only allows us to create one directory. 
+Because both mkdir and ls accept more than one directory name, we could create two of them like this:
+
+--> bash$ mkls2() { mkdir -- "$1" "$2" && ls -dl -- "$1" "$2" ; }
+--> bash$ mkls2 newdir1 newdir2
+--> drwxr-xr-x 2 tom tom 4 2018-07-17 20:32:03 newdir1/
+--> drwxr-xr-x 2 tom tom 4 2018-07-17 20:32:03 newdir2/
+
+But that means the function no longer works correctly for only one directory, presenting an error:
+
+--> bash$ mkls2 singledir
+--> drwxr-xr-x 2 bashuser bashuser 4 2018-07-17 20:30:33 singledir/
+--> mkdir: cannot create directory '': No such file or directory
+It would be convenient to get all of the function's arguments within the function, no matter how many there were. 
+Fortunately, Bash has a syntax for this, with the special "$@" expansion parameter:
+
+--> bash$ mkls() { mkdir -- "$@" && ls -dl -- "$@" ; }
+--> bash$ mkls dirset1 dirset2 dirset3
+--> drwxr-xr-x 2 bashuser bashuser 4 2018-07-17 20:38:01 dirset1/
+--> drwxr-xr-x 2 bashuser bashuser 4 2018-07-17 20:38:01 dirset2/
+--> drwxr-xr-x 2 bashuser bashuser 4 2018-07-17 20:38:01 dirset3/
+"$@" expands to all of the arguments given to the function, separately quoted. 
+You can also check this for yourself by changing the shell's own positional parameters with calls to set and printf:
+
+--> bash$ set -- arg1 'argument 2' '-third argument'
+--> bash$ printf '%s\n' "$@"
+--> arg1
+--> argument 2
+--> -third argument
+The double quotes around $@ are just as important as they are around any other kind of variable or parameter expansion. 
+Without them, special characters in the arguments might be interpreted by the shell, and may be broken up in a way you did not expect. 
+You will never need an unquoted $@ for original, practical Bash scripts.
+
+Returning values from functions
+An early return can sometimes be a good way to stop processing a function due to usage errors. 
+This is sometimes referred to as short-circuiting. 
+In our mkcd example, we know we can't accept more than one argument, because we can't change into more than one directory. 
+We could add a few lines to the function for a full definition, like so:
+
+--> mkcd() {
+-->     if (($# != 1)) ; then
+-->         printf >&2 'Need exactly one argument\n'
+-->         return 1
+-->     fi
+-->     mkdir -- "$1" && cd -- "$1"
+--> }
+
+In this example, the function tests whether $# (the number of arguments) is equal to 1 before proceeding. 
+If it's not exactly 1, the function prints an error message and returns 1, 
+to represent having failed to do what it was asked, and the mkdir and cd commands are never run.
+
+It's important to note from the discussion on return values that you cannot return strings or arrays from functions. 
+The return keyword is not used in the same way as in structured programming languages, such as PHP or JavaScript. 
+It is strictly for integers, and it's intended to describe the function's success or failure, and not any product of its work.
+
+iInstead, for values calculated by a function, you should have the function print the output that you want, and use it in suitable ways in scripts. 
+Using our home example function, the following code uses command substitution to include the function's output in a message of its own:
+
+--> bash$ home() { printf '%s\n' "$HOME" ; }
+--> bash$ printf '%s\n' "Your home directory is: $(home)"
+--> Your home directory is: /home/bashuser
+
+You can treat function calls that emit output on the command line or in scripts the same way you can any other command that emits output; 
+the shell does not treat them specially in this regard. For example, we could count the number of characters in our home output with wc, like so:
+
+--> bash$ home | wc -c
+--> 15
+Note that in this example, wc still counted the newline character we printed at the end of the directory name, hence the count of 15 and not 14.
+
+Similarly, functions can read data from standard input as well. 
+Suppose we write a grep_un function that uses the grep command to search for any line that contains the current user's username:
+
+--> bash$ grep_un() { grep -F -- "$USER" ; }
+If we feed input into this function from a pipe while running as bashuser, it will behave as if grep bashuser were running on that input:
+
+--> bash$ getent passwd | grep_un
+--> bashuser:x:1003:1003:Bash User,,,:/home/bashuser:/bin/bash
+
+
+Besides function, we have script also.
+Arguments to scripts
+Arguments to scripts work in exactly the same way they do for functions:
+
+You can get the arguments as positional parameters with "$1", "$2", "$3", and so on
+You can dynamically get all of the positional parameters without having to count them with "$@"
+You can count the number of positional parameters if you need to with "$#"
+
+Using env
+Another problem with porting Bash scripts is that Bash is not always reliably in the same location. 
+On GNU/Linux systems, it's almost always available in /bin/bash. On other systems, such as FreeBSD, it might instead be in /usr/local/bin/bash.
+
+One way of working around this portability problem is to use a trick with the /usr/bin/env program; 
+using it as a shebang with bash as the argument will find the first bash program in PATH:
+
+--> #!/usr/bin/env bash
+
+If you are distributing your script for other systems in an archive or in a system package, 
+if at all possible, you should specify a fixed path, such as #!/bin/bash, for the correct interpreter either in the packaging process or at build time. 
+For casual sharing of programs, using /usr/bin/env might be good enough, and even if it does not work, 
+your users will be able to see the language you mean the script should run in, and can correct it to point to the right location of the bash program for their system.
+
+Using functions in scripts
+Functions can be defined and used in scripts, and it can be a good idea to do so. 
+One common use is a die function that catches error conditions, prints any given messages, and then exits the script:
+
+--> die() {
+-->     printf >&2 '%s\n' "$@"
+-->     exit 1
+--> }
+--> tempfile=$(mktemp) || die 'Could not create temporary file'
+--> (( $# > 0 )) || die 'Need at least one argument'
+--> [[ $1 != *:* ]] || die 'Colon not allowed in directory name'
+Note that you have to declare the functions before you call them. It's best to put the functions near the top of the script.
