@@ -103,3 +103,8 @@ when you switch to that branch, git automatically pull all the data for that bra
 REMEMBER, once you finished pull request and delete the remote branch, run git fetch -p and for all local branch that has no remote branch,
 you can delete it with git branch -d or git branch -D
 
+You can also delete remote branch from your local repository.
+--> git push origin -d <branch name>
+it will delete the remote branch, but for the local branch you need to delete with 
+--> git branch -d or -D <branch name>
+
