@@ -1,0 +1,10 @@
+#!/bin/bash
+
+file="list"
+
+if [[ ! -f "$file" || ! -r "$file" || ! -s "$file" ]]; then
+	printf >&2 'Make sure that file %s, is exits, readable due to permissioni, and not empty' "$file"
+	exit 1
+fi
+
+
