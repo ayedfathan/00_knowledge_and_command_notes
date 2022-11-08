@@ -1,0 +1,332 @@
+In this final chapter, we'll look at some techniques for programming in Bash defensively, safely, and productively, 
+in a way that makes working with shell scripts a joy rather than a chore, especially by avoiding some nasty pitfalls in the language.
+
+We'll revisit the following material from earlier chapters in more depth:
+- Quoting correctly
+- Handling filenames starting with dashes
+- Separating output and diagnostics
+
+Quoting correctly
+
+Quoting correctly
+It can't be over-emphasized how important it is to wrap expansions, such as $myvar, ${myvar[1]}, and ${myvar##*/}, in double quotes. 
+Failing to do this will lead to bugs down the line when values contain characters that have special meaning to Bash, especially spaces. 
+This is a common problem with code that has been cut and pasted from old documentation, or from bad advice posted on websites or in chat channels.
+
+It only takes a few examples to realize how dangerous a failure to quote properly can be, 
+especially in circumstances where files can be created by other users, and hence might include shell metacharacters. 
+A file named *, for example, is legal, and if expanded incorrectly, can wreak havoc on your scripts:
+
+--> $ cd ~/important
+--> $ myfilename='*'
+--> $ echo $myfilename
+--> important-document  passwords-DO-NOT-DELETE  anniversary-plans
+--> $ echo "$myfilename"
+--> *
+Imagine what might have happened if the first echo command here had been rm in a script instead!
+
+In a few contexts in Bash, an expansion does not strictly require double quotes; none of these cases of myvar here require double quotes, due to their syntactic context:
+
+--> newvar=$myvar
+--> case $myvar in ...
+--> [[ $myvar = "$othervar" ]]
+However, adding double quotes in each of these cases does not do any harm, either:
+
+--> newvar="$myvar"
+--> case "$myvar" in ...
+--> [[ "$myvar" = "$othervar" ]]
+Similarly, watch for cases where you need more than one pair of nested quotes:
+
+--> touch -- "$(basename -- "$filename")"
+This might seem strange to those coming from other programming languages; it looks as if the two different sets of double quotes are mismatched. 
+However, because one pair of quotes is inside a command substitution, the double quotes around it don't interfere with the expansion within it.
+
+In summary, if you're in doubt about any given expansion: quote it!
+
+You may occasionally run into objections of this sort: I don't allow files with spaces or asterisks in their names on my system, so I don't need to quote. 
+Don't listen! Always use quoting to make your scripts safer and more robust.
+
+When you don't want quotes
+The previous section might have led you to ask, What about if I actually do want the contents of my variable to undergo whitespace splitting and glob expansion?
+
+You may be tempted to do this to store a set of options for repeated use in later commands, for example:
+
+--> # Not recommended
+--> curlopts='--location --cookie-jar ~/cookies --cookie ~/cookies'
+--> curl $curlopts --head -- http://www.example.org/
+--> curl $curlopts -- http://www.example.net/
+If we double-quoted the $curlopts expansions here, the options would be treated together as one argument, and wouldn't work correctly. 
+However, this still seems to be a useful property of variables—so how can we use it safely?
+
+The answer is that this is an ideal application of the positional parameters in the POSIX shell, or (preferably) array variables in Bash:
+
+--> # POSIX (if necessary)
+--> (
+-->     set -- --location --cookie-jar ~/cookies --cookie ~/cookies
+-->     curl "$@" --head -- http://www.example.org/
+-->     curl "$@" -- http://www.example.net/
+--> )
+--> # Bash (better)
+--> curlopts=(--location --cookie-jar ~/cookies --cookie ~/cookies)
+--> curl "${curlopts[@]}" --head -- http://www.example.org/
+--> curl "${curlopts[@]}" -- http://www.example.net/
+The first form uses a subshell, surrounding the commands that require the curl options in parentheses, 
+so that the set command that sets the positional parameters for reuse only applies within that block. 
+This works, but it can be awkward to manage several such parameter stacks. 
+If Bash is available, using arrays as in the second form makes the task much easier, and require such forced scoping.
+
+You can build and store whole command strings this way, including the command name itself, executing it by simply expanding the whole array. 
+Here's an example of building all the options and arguments for a grep command line:
+
+--> #!/bin/bash
+--> 
+--> # Example starting values
+--> extended=0
+--> fixed=1
+--> patterns=(foo bar)
+--> extra_files=()
+--> # Start with the grep command line
+--> grepcmdline=(grep)
+--> # If the extended or fixed flags are set, add -F or -E
+--> if ((extended)) ; then
+-->     grepcmdline+=(-E)
+--> elif ((fixed)) ; then
+-->     grepcmdline+=(-F)
+--> fi
+--> # Add each pattern to check
+--> for pattern in "${patterns[@]}" ; do
+-->     grepcmdline+=(-e "$pattern")
+--> done
+--> # Add option terminator
+--> grepcmdline+=(--)
+--> # Add files to check
+--> grepcmdline+=(* "${extra_files[@]}")
+--> # Run command!
+--> "${grepcmdline[@]}"
+This can be very useful for wrapper scripts, designed to simplify the use of a complicated command for one specific application, 
+such as searching a fixed set of files for a set of patterns specified by the user.
+
+Handling filenames starting with dashes
+Recall that in any situation where a filename is stored in a variable, we must be careful when using it on a command line, because it might get interpreted as an option:
+
+--> $ cp "$myvar" destdir
+If myvar were a file named -alphabet-, this would result in a confusing error:
+
+--> cp: invalid option -- 'h'
+This is because the string was interpreted as a bundled set of options, and the letters a, l, and p are all valid options for the GNU cp command, but h is not.
+
+We can address this one of two main ways; the first, for the commands that support it, is to use the -- terminator string option:
+
+--> $ cp -- "$myvar" destdir
+This signals to the cp command that every word after that argument is not an option, but (in this case) a file or directory name to operate on.
+
+Unfortunately, while this is a very widespread convention, not every command supports these terminators. 
+For such commands, a more general way to make this work is to specify the path in a form that doesn't start with a dash, 
+whether by fully qualifying it from the filesystem root, or just by prefixing it with ./:
+
+--> $ myscript /home/bashuser/-alphabet
+--> $ myscript ./-alphabet
+This also works fine in loops:
+
+--> cd data || exit
+--> for file in * ; do
+-->     myscript ./"$file"
+--> done
+
+Separating output and diagnostics
+Remember always to write error output from your script to the standard error file descriptor, not to output, using the >&2 redirection:
+
+--> #!/bin/bash
+--> if ! [[ -e $myfile ]] ; then
+-->     printf >&2 '%s does not exist!\n' "$myfile"
+-->     exit 1
+--> fi
+This allows users to redirect any output the script generates separately from the errors. 
+This applies to non-fatal warnings or diagnostic information just as much as to error messages.
+
+Keeping scripts brief and simple
+The ideal shell script is a relatively short one, because shell script has such limited support for concepts such as variable scope, 
+no support for a library or module system for robust packaging, a lot of global state of various kinds, and very limited data typing.
+
+Instead of trying to write one very long program that does many things, follow the Unix tradition of writing shorter, 
+smaller programs that do one thing each, and that do that thing very well.
+
+If you find your Bash program is becoming too large and unwieldy, and you can't simplify it, consider translating it to Perl, Python, 
+or a similar general-purpose program instead. 
+This is quite normal; shell script has been used since its earliest days as a prototyping language, in exactly this way.
+
+Respecting and applying the user's configuration
+Never assume a user's choice of line-text editor ($EDITOR), visual-text editor ($VISUAL), shell ($SHELL), or web browser ($BROWSER). 
+Instead, fall back to sensible defaults if these values are not set, using the :- form of parameter expansion:
+
+--> #!/bin/bash
+--> read -p 'Now editing your configuration file (press ENTER): '
+--> "${VISUAL:-vi}" -- "$HOME"/.myscriptrc
+The preceding script will wait for an Enter key press (well, a line entry, technically). 
+It then starts the user's choice of visual-text editor if it's set, or defaults to vi if it's not, which should be installed on most Unix-like systems. 
+In some circumstances, such as a script for use by beginners, a more sensible default choice might be nano. 
+Consider carefully what your script's users might expect to happen; avoid giving them any nasty surprises.
+
+Choose to invoke VISUAL instead of EDITOR to start an editor for interactive scripts; it is much more likely to present the user with an editor they can use.
+
+Allowing scripts to run without user input
+If your script requires user data during its run in order to make decisions on what to do, 
+it can be tempting to prompt the user for each required bit of information when needed, perhaps using the -p option to the read builtin to request a prompt:
+
+--> #!/bin/bash
+--> read -p 'Do you want to create the directory? [y/N]: ' createdir
+--> case $createdir in
+-->     y*|Y*)
+-->         mkdir -- "$HOME"/myscript || exit
+-->         ;;
+--> esac
+This example will only create the directory named in the dir variable if a string such as y or YES (or yoyo!) is read from standard input, 
+and assumes that it is likely to be the user's terminal.
+
+This is convenient for interactive scripts, but it assumes that the user running the script is actually at a terminal, 
+and it makes the script awkward to use in automation; 
+someone trying to call this script automatically from cron or systemd would need to arrange to pipe in a single line, yes, to make it work. 
+If the script needs to read from a data file at some point, it also complicates passing further data into it via the standard input.
+
+If you need to make whether to do something during the script's run configurable, consider using a command-line option instead:
+
+--> case $1 in
+-->     -c|--createdir)
+-->         mkdir -- "$HOME"/myscript || exit
+-->         shift
+-->         ;;
+--> esac
+Now the need for the behavior can be specified on the command line:
+
+--> $ myscript -c
+--> $ myscript --createdir
+In some cases, it can even be desirable to put the variable in a configuration file, to be read at startup from a known path:
+
+--> #!/bin/bash
+--> if [[ -r $HOME/.myscriptrc ]] ; then
+-->     source "$HOME"/.myscriptrc
+--> fi
+--> case $createdir in
+-->     y*|Y*)
+-->         mkdir -- "$HOME"/myscript || exit
+-->         ;;
+--> esac
+The preceding script uses source to run all of the Bash commands in the ~/.myscriptrc file, if it exists. 
+If this configuration file contains a definition of createdir as anything starting with y or Y, the directory will be created:
+
+--> $ cat ~/.myscriptrc
+--> createdir=yes
+If, for whatever reason, your script really does need user input, 
+which sometimes happens in secure contexts where you need to read straight from the terminal device, 
+consider including an optional mode named --batch, --force, or a similar name that proceeds without that input, 
+skipping all the prompts by assuming a sensible default for an answer:
+
+--> #!/bin/bash
+--> case $1 in
+-->     -b|--batch)
+-->         batch=1
+-->         shift
+-->         ;;
+--> esac
+--> if ((batch)) ; then
+-->     createdir=y
+--> else
+-->     read -p 'Do you want to create the directory? [y/N]: ' createdir
+--> fi
+--> case $createdir in
+-->     y*|Y*)
+-->         mkdir -- "$HOME"/myscript || exit
+-->         ;;
+--> esac
+
+Avoiding path anti-patterns
+Some shell script programmers use absolute paths for even common system tools:
+
+--> /bin/sed '/^$/d' data
+This command line is intended to print the contents of the data file, but to skip blank lines. 
+It does work on most GNU/Linux systems, but why specify the full /bin/sed path? Why not just sed?
+
+Worse, sometimes people try to abbreviate this by saving the full paths in variables, after retrieving them with a non-standard tool such as which:
+
+--> # Terrible code; never do this!
+--> SED=$(which sed)
+--> $SED '/^$d/' data
+Can you see anything else wrong with this code? Hint: what was the very first thing we re-emphasized in this chapter?
+This use of which and full paths such as this is unnecessary, and there are no advantages to doing it. 
+Bash will already search PATH for you for any command name; you don't need to rely on which (or even type -P) to do it for you.
+
+Besides being unnecessarily verbose, there are other problems with this approach; this script isn't respectful, 
+because it doesn't apply the user's choice of $PATH, and worse, it's not portable: 
+on some Unix systems, the sed program may not be in /bin, but in /usr/bin, or even something very hard to predict, such as /usr/xpg4/bin (yes, really!).
+
+So, keep it simple; just call sed, and let the system figure the rest of it out:
+
+--> sed '/^$/d' data
+
+Documenting scripts
+Just as with any kind of programming, it's important to write some documentation to help your users understand and run your program, 
+and to know all of its available features. We'll look at three documentation methods: writing comments, providing help output, and writing manual pages.
+
+Using temporary files cleanly
+If you need a temporary file in your script to store data for the script's run, it can be tempting to assume a fixed path for the file in /tmp:
+
+--> # Store the current date for later
+--> # Requires GNU/BSD `date` with non-POSIX %s format
+--> date +%s > /tmp/myscript-timestamp
+/tmp exists on virtually all Unix systems, which makes it a popular choice. However, this approach has some risks:
+
+There may be a safer or more suitable location for temporary files specified by the system, or preferred by the user, such as /var/tmp. 
+The /tmp directory might be very strictly locked down in some environments, especially PCI-DSS-compliant systems.
+If the temporary filename name is not unique, and more than one instance of the script runs at once, the behavior can be unpredictable and hard to debug.
+Because /tmp is world-writable, if an attacker can write to and predict the name of the data file in /tmp, 
+they could edit it before the script finishes, possibly hijacking the script.
+The name of the temporary directory is often available in the TMPDIR environment variable, which can improve this approach a little, while still using /tmp as a fallback:
+
+--> date +%s > "${TMPDIR:-/tmp}"/myscript-timestamp
+However, perhaps the best approach is the use of the mktemp tool, if it's available. 
+It creates temporary files or directories, and prints the name of whatever it created. 
+It should do this creation relatively safely, with a randomized name, and in a location and pattern that's consistent with the system's settings:
+
+--> $ mktemp -d
+--> /tmp/tmp.mmfGKhMxtv
+We can use this to safely pick a temporary directory for our script each run:
+
+--> tempdir=$(mktemp -d) || exit
+--> date +%s > "$tempdir"/myscript-timestamp
+Note that we abort the script if the temporary directory could not be created; || exit runs only if the mktemp command in the variable assignment fails.
+
+Cleaning up after a script
+Dropping temporary files without cleaning them up is a little untidy; at the end of a script where temporary files are used, we should have a safe rm command to remove them afterward:
+
+--> #!/bin/bash
+--> 
+--> # Code setting and using tempdir goes here, and then ...
+--> 
+--> # Remove the directory
+--> if [[ -n $tempdir ]] ; then
+-->     rm -- "$tempdir"/myscript-timestamp
+-->     rmdir -- "$tempdir"
+--> fi
+Notice that we're careful to check that tempdir actually has a value, using the -n test before we run this code, 
+even if we don't think anything might have changed it; otherwise we'd be running rm -- /myscript-timestamp.
+
+Notice also that we're carefully removing only the files we know we've created, rather than just specifying "$tempdir"/*. 
+An empty value for the tempdir variable in such a case could have terrible consequences!
+
+The preceding code is a good start for the ending of a script – but what about cases where a script is interrupted? 
+Ideally, we'd delete the files even if someone pressed Ctrl + C to interrupt the script before it was finished.
+
+Bash provides an EXIT trap for this purpose; we can define a command that should be run whenever the script exits, 
+if it can possibly run it. The very start of our Bash script might look like this:
+
+--> cleanup() {
+-->     if [[ -n $tempdir ]] ; then
+-->         rm -f -- "$tempdir"/myscript-timestamp
+-->         rmdir -f -- "$tempdir"
+-->     fi
+--> }
+--> trap cleanup EXIT
+--> tempdir=$(mktemp -d) || exit
+The cleanup function is run whenever the Bash script exits, and hasn't been sent the SIGKILL or kill -9 signal. 
+If the tempdir variable is set, it tries to clear away a temporary file in it, and then remove the temporary directory itself. 
+Notice that we set up the hook first, before the temporary directory is even created, to get it in place as soon as possible.
