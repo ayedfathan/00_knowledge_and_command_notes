@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [[ "$#" -ne 1 ]]; then
+        printf >&2 'Need to have 1 argument\n'
+        exit 1
+fi
+
+age="$1"
+if ! [[ $age =~ ^[0-9]+$ ]]; then
+        printf >&2 'You need to pass correct age only\n'
+        exit 1;
+fi
+
+if [[ "$age" -le 5 ]]; then
+        printf 'You are still a baby\n'
+elif [[ "$age" -le 10 ]]; then
+        printf 'You are a kid currently\n'
+elif [[ "$age" -le 20 ]]; then
+        printf 'You are a teenager\n'
+elif [[ "$age" -le 30 ]]; then
+        printf 'You are a young man\n'
+else
+        printf 'NOT YET DEFINED\n'
+fi
+
