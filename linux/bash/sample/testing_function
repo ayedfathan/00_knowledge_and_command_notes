@@ -1,0 +1,16 @@
+#!/bin/bash
+
+show_me(){
+	if [[ "$#" -ne 3 ]]; then
+		printf >&2 'Please provide first name, lastname, and status\n'
+		exit 1
+	fi
+
+	local firstname="$1"
+	local lastname="$2"
+	local status="$3"
+
+	printf 'First name = %s.\nLast Name = %s.\nStatus = %s.\n' "$firstname" "$lastname" "$status"
+}
+
+show_me "said" "azli" "married"

@@ -1,0 +1,8 @@
+
+#!/bin/bash
+
+counter=1
+while [[ "${counter}" -le 10 ]]; do
+	printf 'Current counter is : %s\n' "${counter}"
+	((counter++))
+done
