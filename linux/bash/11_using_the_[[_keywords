@@ -28,5 +28,5 @@ Bash will check whether the value of the myshell variable starts with b; the res
 
 The [[ keyword also supports a new operator, =~, to test whether strings match regular expressions:
 
---> [[ $myshell =~ 'sh$' ]]
+--> [[ $myshell =~ sh$ ]]
 This will test whether the myshell variable's value ends with the letters sh, with $ being a regular expression metacharacter meaning "end of string."
