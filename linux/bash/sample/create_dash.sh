@@ -31,8 +31,9 @@ function process_param()
     # Start parsing the parameter given by user in the command line
     while (( $# > 0))
     do
-	if grep -q -e '^-c.*' <<< "${1}"; then    
+	if grep -q -e '^-c.*$' <<< "${1}"; then    
         #if [[ "${1:0:2}" = '-c' ]]; then
+	#if [[ "${1}" =~ ^-c[-_=+]?$' ]]; then
 	# Found -c passed by user in command line as parameter
 	    if [[ "${#1}" -eq 2 ]]; then
 	    # The character expected by user is not attached to -c, like -c -
