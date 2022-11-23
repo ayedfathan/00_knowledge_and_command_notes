@@ -8,7 +8,7 @@ function usage_exit()
 
 function parse_args()
 {
-   while getopts 'lsu:p:' OPTION
+   while getopts :lsu:p: OPTION
    do
        case $OPTION in
 	   l) l_flag=1
@@ -19,9 +19,12 @@ function parse_args()
 	      ;;
 	   p) p_value="${OPTARG}"
 	      ;;
-	   ?) echo 'wrong options'
-              usage_exit
-	      ;;
+	   \:) printf 'Argument missing from -%s option\n' $"{OPTARG}" >&2
+	       usage_exit
+	       ;;
+	   \?) printf 'Unknown option -%s\n' "${OPTARG}" >&2
+               usage_exit
+	       ;;
        esac
    done 
 
